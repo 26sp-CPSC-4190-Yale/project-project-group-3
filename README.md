@@ -7,10 +7,10 @@ The database must be reconstructed on other peopl's device if you need to use it
 1. Download postgreSQL (on mac its pretty easy with homebrew but im not sure how to do it on windows)
 2. run the following commands:
     createdb -U postgres open_shelf_db
-    psql -U postgres -d mydb -f schema.sql
-    psql -U postgres -d mydb -f seed.sql
+    psql -U postgres -d open_shelf_db -f schema.sql
+    psql -U postgres -d open_shelf_db -f seed.sql
 3. Done! For testing, run the following command:
     psql -U postgres -d open_shelf_db
 4. Then run any queries you want.
 5. If at any point you want to reconstruct the table just run the following command followed by the commands in step 2:
-    dropdb -U postgres -d open_shelf_db
+    dropdb -U postgres open_shelf_db
