@@ -69,8 +69,8 @@ def search_results():
     else:
         where = """
             WHERE b.isbn ILIKE :q
-            WHERE b.title ILIKE :q
-            WHERE b.author ILIKE :q
+            OR b.title ILIKE :q
+            OR b.author ILIKE :q
             OR l.course ILIKE :q
         """
 
@@ -79,7 +79,7 @@ def search_results():
     full_query = text(f"{base_query} {where} {order}")
 
     result = db.session.execute(full_query, {"q": like})
-    listings = result.mappings().all
+    listings = result.mappings().all()
 
     return render_template("search/results.html", listings=listings, query=q)
 
@@ -110,7 +110,7 @@ def listing_detail(listing_id):
                  """)
     
     result = db.session.execute(query, {"lid": listing_id})
-    listing = result.mappings.first()
+    listing = result.mappings().first()
 
     # 404 if listing doesn't exist
     if listing is None:

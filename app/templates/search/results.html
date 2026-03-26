@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-<h1>Results for "{{ query }}</h1>
+<h1>Results for "{{ query }}"</h1>
 
 {% if listings %}
 <table>
@@ -16,7 +16,7 @@
     </thead>
 
     <tbody>
-        {% for l in listings}
+        {% for l in listings %}
         <tr>
             <td>{{ l.title }}</td>
             <td>{{ l.author }}</td>

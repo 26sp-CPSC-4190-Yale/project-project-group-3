@@ -12,6 +12,6 @@ def create_app():
 
     from app.routes.search import search_bp
     # register blueprints
-    app.register_blueprint(search_bp)
+    app.register_blueprints(search_bp)
 
     return app
