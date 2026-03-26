@@ -1,21 +1,46 @@
+"""
+Search Blueprint
+Handles all search-related routes
+
+/search                 -> renders the search form
+/search/results         -> queries the database, returns matching listings
+/search/<listing_id>    -> shows full details for one listing
+
+Update SQL queries 
+"""
+
 from flask import Blueprint, render_template, request, abort
 from app import db
 from sqlalchemy import text
 
 search_bp = Blueprint("search", __name__)
 
+"""
+Route: Search form page
+URL: GET /search
+"""
 @search_bp.route("/search")
 def search_page():
     return render_template("search/search.html")
 
+"""
+Reads query parameters from the URL
+URL: GET /search/results?q=<search_terms>&field=<field_name>
+Query params:
+    q - the search term (e.g., "calculus", "CPSC 2230")
+    field - which column to search: "all", "title", "isbn", "author", "course"
+"""
 @search_bp.route("/search/results")
 def search_results():
+    # read the query params
     q = request.args.get("q", "").strip()
     field = request.args.get("field", "all")
 
+    # guard empty searches
     if not q:
         return render_template("search/results.html", listings=[], query=q)
     
+    # query builder
     like = f"%{q}%"
 
     base_query = """
@@ -58,8 +83,16 @@ def search_results():
 
     return render_template("search/results.html", listings=listings, query=q)
 
+"""
+Route: Signle listing detail
+URL: GET /search/<int:listing_id>
+
+Shows full information about one specific listing
+"""
 @search_bp.route("/search/<int:listing_id>")
 def listing_detail(listing_id):
+
+    # query for one listing by primary key
     query = text("""
         SELECT l.id       AS listing_id,
                     l.course,
@@ -79,6 +112,7 @@ def listing_detail(listing_id):
     result = db.session.execute(query, {"lid": listing_id})
     listing = result.mappings.first()
 
+    # 404 if listing doesn't exist
     if listing is None:
         abort(404)
 

@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1>{{ listing.title }}</h1>
+
+<dl>
+    <dt>Author</dt>
+    <dd>{{ listing.author }}</dd>
+
+    <dt>ISBN</dt>
+    <dd>{{ listing.isbn }}</dd>
+
+    <dt>Publisher</dt>
+    <dd>{{ listing.publisher }}</dd>
+
+    <dt>Edition</dt>
+    <dd>{{ listing.edition }}</dd>
+
+    <dt>Course</dt>
+    <dd>{{ listing.course }}</dd>
+
+    <dt>Condition</dt>
+    <dd>{{ listing.condition }}</dd>
+
+    <dt>Posted By</dt>
+    <dd>{{ listing.posted_by }}</dd>
+</dl>
+
+<a href="{{ url_for('search.search_page') }}">← Back to search</a>
+{% endblock %}
