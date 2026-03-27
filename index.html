@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OpenShelf — Access Your Library</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+  <canvas id="bgCanvas"></canvas>
+  <div class="page">
+    <header class="site-header">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+          </svg>
+        </div>
+        <span class="logo-text">OpenShelf</span>
+      </div>
+      <p class="tagline">Your academic library, always open.</p>
+    </header>
+
+    <main class="card" id="card">
+      <div class="tabs" role="tablist">
+        <button class="tab active" id="tab-login" role="tab"
+          aria-selected="true" aria-controls="panel-login" data-target="login">Sign In</button>
+        <button class="tab" id="tab-signup" role="tab"
+          aria-selected="false" aria-controls="panel-signup" data-target="signup">Create Account</button>
+        <div class="tab-indicator" id="tabIndicator"></div>
+      </div>
+
+      <!-- LOGIN PANEL -->
+      <div class="panel active" id="panel-login" role="tabpanel" aria-labelledby="tab-login">
+        <div class="panel-intro">
+          <h1>Welcome back<span class="dot">.</span></h1>
+          <p>Sign in to continue reading where you left off.</p>
+        </div>
+        <form id="loginForm" class="form" novalidate>
+          <div class="field" id="field-login-email">
+            <label for="login-email">Email address</label>
+            <div class="input-wrap">
+              <span class="input-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
+              </span>
+              <input type="email" id="login-email" placeholder="you@university.edu"
+                autocomplete="email" aria-describedby="login-email-err"/>
+            </div>
+            <span class="field-error" id="login-email-err" role="alert"></span>
+          </div>
+
+          <div class="field" id="field-login-pw">
+            <label for="login-pw">Password</label>
+            <div class="input-wrap">
+              <span class="input-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                  <path d="M7 11V7a5 5 0 0110 0v4"/>
+                </svg>
+              </span>
+              <input type="password" id="login-pw" placeholder="••••••••"
+                autocomplete="current-password" aria-describedby="login-pw-err"/>
+              <button type="button" class="pw-toggle" data-target="login-pw" aria-label="Show password">
+                <svg class="eye-show" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                </svg>
+                <svg class="eye-hide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+                  <path d="M17.9 17.9A10 10 0 0112 20C5.4 20 1 12 1 12a18.1 18.1 0 015.1-5.9M9.9 4.2A9.8 9.8 0 0112 4c6.6 0 11 8 11 8a18.4 18.4 0 01-2.2 3.2"/>
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                </svg>
+              </button>
+            </div>
+            <span class="field-error" id="login-pw-err" role="alert"></span>
+          </div>
+
+          <div class="form-row">
+            <label class="checkbox-label">
+              <input type="checkbox" id="remember"/>
+              <span class="checkbox-custom"></span>
+              Remember me
+            </label>
+            <a href="#" class="link-subtle" id="forgotLink">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="btn-primary" id="loginBtn">
+            <span class="btn-label">Sign In</span>
+            <span class="btn-spinner" aria-hidden="true"></span>
+          </button>
+        </form>
+        <p class="switch-hint">
+          No account? <button class="link-action" data-switch="signup">Create one free</button>
+        </p>
+      </div>
+
+      <!-- SIGNUP PANEL -->
+      <div class="panel" id="panel-signup" role="tabpanel" aria-labelledby="tab-signup">
+        <div class="panel-intro">
+          <h1>Join OpenShelf<span class="dot">.</span></h1>
+          <p>Access 48,000+ textbooks from day one — free to start.</p>
+        </div>
+        <form id="signupForm" class="form" novalidate>
+          <div class="field-row">
+            <div class="field" id="field-su-fname">
+              <label for="su-fname">First name</label>
+              <div class="input-wrap">
+                <span class="input-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                  </svg>
+                </span>
+                <input type="text" id="su-fname" placeholder="Jane"
+                  autocomplete="given-name" aria-describedby="su-fname-err"/>
+              </div>
+              <span class="field-error" id="su-fname-err" role="alert"></span>
+            </div>
+            <div class="field" id="field-su-lname">
+              <label for="su-lname">Last name</label>
+              <div class="input-wrap">
+                <span class="input-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                  </svg>
+                </span>
+                <input type="text" id="su-lname" placeholder="Smith"
+                  autocomplete="family-name" aria-describedby="su-lname-err"/>
+              </div>
+              <span class="field-error" id="su-lname-err" role="alert"></span>
+            </div>
+          </div>
+
+          <div class="field" id="field-su-email">
+            <label for="su-email">Email address</label>
+            <div class="input-wrap">
+              <span class="input-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
+              </span>
+              <input type="email" id="su-email" placeholder="you@university.edu"
+                autocomplete="email" aria-describedby="su-email-err"/>
+            </div>
+            <span class="field-error" id="su-email-err" role="alert"></span>
+          </div>
+
+          <div class="field" id="field-su-pw">
+            <label for="su-pw">Password</label>
+            <div class="input-wrap">
+              <span class="input-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                  <path d="M7 11V7a5 5 0 0110 0v4"/>
+                </svg>
+              </span>
+              <input type="password" id="su-pw" placeholder="Min. 8 characters"
+                autocomplete="new-password" aria-describedby="su-pw-err"/>
+              <button type="button" class="pw-toggle" data-target="su-pw" aria-label="Show password">
+                <svg class="eye-show" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                </svg>
+                <svg class="eye-hide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+                  <path d="M17.9 17.9A10 10 0 0112 20C5.4 20 1 12 1 12a18.1 18.1 0 015.1-5.9M9.9 4.2A9.8 9.8 0 0112 4c6.6 0 11 8 11 8a18.4 18.4 0 01-2.2 3.2"/>
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                </svg>
+              </button>
+            </div>
+            <span class="field-error" id="su-pw-err" role="alert"></span>
+            <div class="strength-bar" id="strengthBar">
+              <div class="strength-track"><div class="strength-fill" id="strengthFill"></div></div>
+              <span class="strength-label" id="strengthLabel"></span>
+            </div>
+          </div>
+
+          <div class="field" id="field-su-confirm">
+            <label for="su-confirm">Confirm password</label>
+            <div class="input-wrap">
+              <span class="input-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 11 12 14 22 4"/>
+                  <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                </svg>
+              </span>
+              <input type="password" id="su-confirm" placeholder="Re-enter password"
+                autocomplete="new-password" aria-describedby="su-confirm-err"/>
+            </div>
+            <span class="field-error" id="su-confirm-err" role="alert"></span>
+          </div>
+
+          <label class="checkbox-label terms-label">
+            <input type="checkbox" id="terms"/>
+            <span class="checkbox-custom"></span>
+            I agree to the <a href="#" class="link-subtle">Terms of Service</a> and <a href="#" class="link-subtle">Privacy Policy</a>
+          </label>
+          <span class="field-error" id="terms-err" role="alert"></span>
+
+          <button type="submit" class="btn-primary" id="signupBtn">
+            <span class="btn-label">Create My Account</span>
+            <span class="btn-spinner" aria-hidden="true"></span>
+          </button>
+        </form>
+        <p class="switch-hint">
+          Already a member? <button class="link-action" data-switch="login">Sign in here</button>
+        </p>
+      </div>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
