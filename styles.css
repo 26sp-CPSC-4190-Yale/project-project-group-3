@@ -1,0 +1,22 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+button { font: inherit; cursor: pointer; }
+
+:root {
+  --bg:        #0f0d0b;
+  --surface:   #1a1714;
+  --card-bg:   #201d19;
+  --border:    #2e2a25;
+  --border-hi: #4a4138;
+  --ink:       #f0ead8;
+  --ink-muted: #7a7265;
+  --ink-dim:   #4a4440;
+  --amber:     #d4882a;
+  --amber-glow:rgba(212,136,42,0.18);
+  --red:       #b84040;
+  --radius-sm: 8px;
+  --radius-lg: 20px;
+  --ease:      .22s cubic-bezier(.4,0,.2,1);
+  --font-d:    'Cormorant Garamond', Georgia, serif;
+  --font-b:    'Jost', system-ui, sans-serif;
+}
+
