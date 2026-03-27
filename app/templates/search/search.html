@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1>Find a Textbook</h1>
+
+<form action="{{ url_for('search.search_results') }}" method="get">
+    <select name="field">
+        <option value="all">All fields</option>
+        <option value="title">Title</option>
+        <option value="isbn">ISBN</option>
+        <option value="author">Author</option>
+        <option valule="course">Course</option>
+    </select>
+
+    <input  type="text"
+            name="q"
+            placeholder=""e.g., Data Structures, CPSC 2230, 499064203-1..."
+            required
+    />
+
+    <button type="submit">Search</button>
+</form>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1>Results for "{{ query }}"</h1>
+
+{% if listings %}
+<table>
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>ISBN</th>
+            <th>Course</th>
+            <th>Condition</th>
+            <th>Posted By</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for l in listings %}
+        <tr>
+            <td>{{ l.title }}</td>
+            <td>{{ l.author }}</td>
+            <td>{{ l.isbn }}</td>
+            <td>{{ l.course }}</td>
+            <td>{{ l.condition }}</td>
+            <td>{{ l.posted_by }}</td>
+            <td>
+                <a href="{{ url_for('search.listing_detail', listing_id=l.listing_id) }}">
+                    View
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No textbooks matched your search</p>
+{% endif %}
+{% endblock %}

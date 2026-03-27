@@ -1,0 +1,22 @@
+<!--
+    Base template
+    *Will be replaced later, just for testing rn
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open Shelf</title>
+</head>
+<body>
+    <nav>
+        <a href="{{ url_for('search.search_page') }}">Search</a>
+        <!--Logins to be added-->
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>
