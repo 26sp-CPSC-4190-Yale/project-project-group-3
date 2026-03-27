@@ -1,1 +1,18 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/D8kToVOh)
+# OpenShelf
+
+A polished login/signup interface built with HTML, CSS, and JavaScript.
+
+Structure
+- `index.html`
+- `css/styles.css`
+- `js/app.js`
+
+Features
+
+-Sign In / Create Account tab switcher with animated indicator
+-Form validation with live inline error messages
+-Password visibility toggle on all password fields
+-Password strength meter (Weak → Fair → Good → Strong)
+-Loading spinner on submit buttons during async calls
+-Toast notifications for success and error feedback
+-Animated canvas background (floating orbs + book-spine shapes)
