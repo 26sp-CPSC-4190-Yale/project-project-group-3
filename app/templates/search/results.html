@@ -1,39 +1,46 @@
 {% extends "layout.html" %}
 {% block content %}
-<h1>Results for "{{ query }}"</h1>
+<section class="page-heading">
+    <div>
+        <p class="section-kicker">Search Results</p>
+        <h1>Results for "{{ query }}"</h1>
+    </div>
+    <div class="action-row">
+        <a class="btn btn-secondary" href="{{ url_for('search.search_page') }}">Refine Search</a>
+        <a class="btn btn-primary" href="{{ url_for('upload.upload_page') }}">Post a Textbook</a>
+    </div>
+</section>
 
 {% if listings %}
-<table>
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Author</th>
-            <th>ISBN</th>
-            <th>Course</th>
-            <th>Condition</th>
-            <th>Posted By</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        {% for l in listings %}
-        <tr>
-            <td>{{ l.title }}</td>
-            <td>{{ l.author }}</td>
-            <td>{{ l.isbn }}</td>
-            <td>{{ l.course }}</td>
-            <td>{{ l.condition }}</td>
-            <td>{{ l.posted_by }}</td>
-            <td>
-                <a href="{{ url_for('search.listing_detail', listing_id=l.listing_id) }}">
-                    View
-                </a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<section class="result-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>ISBN</th>
+                <th>Course</th>
+                <th>Condition</th>
+                <th>Posted By</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for l in listings %}
+            <tr>
+                <td>{{ l.title }}</td>
+                <td>{{ l.author }}</td>
+                <td>{{ l.isbn }}</td>
+                <td>{{ l.course }}</td>
+                <td>{{ l.condition }}</td>
+                <td>{{ l.posted_by }}</td>
+                <td><a href="{{ url_for('search.listing_detail', listing_id=l.listing_id) }}">View listing</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
 {% else %}
-<p>No textbooks matched your search</p>
+<p class="empty-state">No textbooks matched your search yet. Try a broader query or post the first listing for that course.</p>
 {% endif %}
 {% endblock %}

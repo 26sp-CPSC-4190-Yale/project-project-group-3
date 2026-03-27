@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenShelf</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body class="landing-page">
+    <canvas id="bgCanvas"></canvas>
+    <div class="page-shell">
+        <header class="hero-header">
+            <a class="brand" href="{{ url_for('index') }}">
+                <span class="brand-mark">OS</span>
+                <span class="brand-text">OpenShelf</span>
+            </a>
+            <nav class="hero-nav">
+                <a href="{{ url_for('search.search_page') }}">Search</a>
+                <a href="{{ url_for('upload.upload_page') }}">Sell a Book</a>
+                {% if current_user.id %}
+                <span class="user-pill">{{ current_user.username }}</span>
+                <button class="nav-button" type="button" id="logoutButton">Logout</button>
+                {% endif %}
+            </nav>
+        </header>
+
+        <main class="hero-grid">
+            <section class="hero-copy">
+                <p class="eyebrow">Campus textbook exchange</p>
+                <h1>Access your library, then trade what you no longer need.</h1>
+                <p class="hero-body">
+                    Your teammate's new front-end now acts as the front door for the MVP.
+                    Browse listings, post textbooks, and keep the search flow connected to the shared Postgres data.
+                </p>
+                <div class="hero-actions">
+                    <a class="btn btn-primary" href="{{ url_for('search.search_page') }}">Browse Listings</a>
+                    <a class="btn btn-secondary" href="{{ url_for('upload.upload_page') }}">Post a Textbook</a>
+                </div>
+                <ul class="hero-stats">
+                    <li><strong>Search</strong><span>ISBN, title, author, or course</span></li>
+                    <li><strong>Upload</strong><span>Create listings tied to the shared schema</span></li>
+                    <li><strong>MVP</strong><span>One Flask app instead of split prototypes</span></li>
+                </ul>
+            </section>
+
+            <section class="auth-card" id="card">
+                <div class="tabs" role="tablist" aria-label="Account options">
+                    <button class="tab active" id="tab-login" role="tab" aria-selected="true" aria-controls="panel-login" data-target="login">Sign In</button>
+                    <button class="tab" id="tab-signup" role="tab" aria-selected="false" aria-controls="panel-signup" data-target="signup">Create Account</button>
+                    <span class="tab-indicator" id="tabIndicator"></span>
+                </div>
+
+                <section class="panel active" id="panel-login" role="tabpanel" aria-labelledby="tab-login">
+                    <div class="panel-intro">
+                        <p class="kicker">Prototype Access</p>
+                        <h2>Welcome back.</h2>
+                        <p>Sign in with an existing account to personalize uploads and keep the MVP connected to a real user.</p>
+                    </div>
+                    <form class="form" id="loginForm" novalidate>
+                        <label class="field">
+                            <span>Email address</span>
+                            <div class="input-wrap">
+                                <input type="email" id="login-email" placeholder="you@university.edu" autocomplete="email">
+                            </div>
+                            <span class="field-error" id="login-email-err"></span>
+                        </label>
+
+                        <label class="field">
+                            <span>Password</span>
+                            <div class="input-wrap">
+                                <input type="password" id="login-pw" placeholder="••••••••" autocomplete="current-password">
+                                <button type="button" class="pw-toggle" data-target="login-pw" aria-label="Toggle password visibility">Show</button>
+                            </div>
+                            <span class="field-error" id="login-pw-err"></span>
+                        </label>
+
+                        <div class="form-row">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="remember">
+                                <span>Remember me</span>
+                            </label>
+                            <button class="link-button" type="button" data-toast="Password reset is not connected in this MVP yet.">Forgot password?</button>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-full">Sign In</button>
+                    </form>
+                    <p class="panel-note">For seeded users, login also supports the plain-text passwords already in the teammate seed file.</p>
+                </section>
+
+                <section class="panel" id="panel-signup" role="tabpanel" aria-labelledby="tab-signup">
+                    <div class="panel-intro">
+                        <p class="kicker">Future Account Flow</p>
+                        <h2>Join OpenShelf.</h2>
+                        <p>This signup now creates a real account in the shared `users` table without changing the schema.</p>
+                    </div>
+                    <form class="form" id="signupForm" novalidate>
+                        <div class="field-grid">
+                            <label class="field">
+                                <span>First name</span>
+                                <div class="input-wrap">
+                                    <input type="text" id="su-fname" placeholder="Jane" autocomplete="given-name">
+                                </div>
+                                <span class="field-error" id="su-fname-err"></span>
+                            </label>
+                            <label class="field">
+                                <span>Last name</span>
+                                <div class="input-wrap">
+                                    <input type="text" id="su-lname" placeholder="Smith" autocomplete="family-name">
+                                </div>
+                                <span class="field-error" id="su-lname-err"></span>
+                            </label>
+                        </div>
+
+                        <label class="field">
+                            <span>Email address</span>
+                            <div class="input-wrap">
+                                <input type="email" id="su-email" placeholder="you@university.edu" autocomplete="email">
+                            </div>
+                            <span class="field-error" id="su-email-err"></span>
+                        </label>
+
+                        <label class="field">
+                            <span>Password</span>
+                            <div class="input-wrap">
+                                <input type="password" id="su-pw" placeholder="Min. 8 characters" autocomplete="new-password">
+                                <button type="button" class="pw-toggle" data-target="su-pw" aria-label="Toggle password visibility">Show</button>
+                            </div>
+                            <span class="field-error" id="su-pw-err"></span>
+                        </label>
+
+                        <label class="field">
+                            <span>Confirm password</span>
+                            <div class="input-wrap">
+                                <input type="password" id="su-confirm" placeholder="Re-enter password" autocomplete="new-password">
+                            </div>
+                            <span class="field-error" id="su-confirm-err"></span>
+                        </label>
+
+                        <label class="checkbox-label terms-label">
+                            <input type="checkbox" id="terms">
+                            <span>I agree to the prototype terms for this class MVP.</span>
+                        </label>
+                        <span class="field-error" id="terms-err"></span>
+
+                        <button type="submit" class="btn btn-primary btn-full">Create My Account</button>
+                    </form>
+                    <p class="panel-note">New accounts are stored with hashed passwords and logged in immediately after signup.</p>
+                </section>
+            </section>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

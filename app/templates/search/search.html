@@ -1,22 +1,37 @@
 {% extends "layout.html" %}
 {% block content %}
-<h1>Find a Textbook</h1>
+<section class="page-heading">
+    <div>
+        <p class="section-kicker">Search Marketplace</p>
+        <h1>Find a textbook that matches your course.</h1>
+    </div>
+    <p>Search by ISBN, title, author, or course code across the shared listing database.</p>
+</section>
 
-<form action="{{ url_for('search.search_results') }}" method="get">
-    <select name="field">
-        <option value="all">All fields</option>
-        <option value="title">Title</option>
-        <option value="isbn">ISBN</option>
-        <option value="author">Author</option>
-        <option valule="course">Course</option>
-    </select>
+<section class="search-controls">
+    <form action="{{ url_for('search.search_results') }}" method="get" class="search-form">
+        <div class="input-shell">
+            <select name="field">
+                <option value="all">All fields</option>
+                <option value="title">Title</option>
+                <option value="isbn">ISBN</option>
+                <option value="author">Author</option>
+                <option value="course">Course</option>
+            </select>
+        </div>
 
-    <input  type="text"
-            name="q"
-            placeholder=""e.g., Data Structures, CPSC 2230, 499064203-1..."
-            required
-    />
+        <div class="input-shell">
+            <input
+                type="text"
+                name="q"
+                placeholder="e.g. Data Structures, CPSC 2230, 499064203-1"
+                required
+            />
+        </div>
 
-    <button type="submit">Search</button>
-</form>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    <p class="helper-text">Tip: if the landing page is the new front door, this route stays your actual inventory browser.</p>
+</section>
 {% endblock %}

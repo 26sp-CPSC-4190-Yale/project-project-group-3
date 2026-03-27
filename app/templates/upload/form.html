@@ -1,0 +1,154 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="upload-layout">
+    <div class="page-heading">
+        <div>
+            <p class="section-kicker">Create Listing</p>
+            <h1>Post a textbook into the shared marketplace.</h1>
+        </div>
+        <div class="action-row">
+            <a class="btn btn-secondary" href="{{ url_for('search.search_page') }}">Search first</a>
+            <a class="btn btn-primary" href="{{ url_for('index') }}">Back home</a>
+        </div>
+    </div>
+
+    <div class="upload-summary">
+        <div class="stat-card">
+            <strong>Books</strong>
+            <span>Uploads reuse an existing book by ISBN when one already exists.</span>
+        </div>
+        <div class="stat-card">
+            <strong>Listings</strong>
+            <span>New records go straight into the schema used by search results.</span>
+        </div>
+        <div class="stat-card">
+            <strong>MVP Note</strong>
+            <span>The current schema does not store free-form listing notes yet.</span>
+        </div>
+    </div>
+
+    <form id="uploadForm" class="upload-form">
+        <div class="field-grid">
+            <label class="field">
+                <span>Title</span>
+                <div class="input-wrap">
+                    <input id="title" name="title" type="text" required placeholder="Introduction to Algorithms">
+                </div>
+            </label>
+            <label class="field">
+                <span>Author</span>
+                <div class="input-wrap">
+                    <input id="author" name="author" type="text" required placeholder="Thomas H. Cormen">
+                </div>
+            </label>
+            <label class="field">
+                <span>ISBN</span>
+                <div class="input-wrap">
+                    <input id="isbn" name="isbn" type="text" required placeholder="9780262046305">
+                </div>
+            </label>
+            <label class="field">
+                <span>Publisher</span>
+                <div class="input-wrap">
+                    <input id="publisher" name="publisher" type="text" required placeholder="MIT Press">
+                </div>
+            </label>
+            <label class="field">
+                <span>Edition</span>
+                <div class="input-wrap">
+                    <input id="edition" name="edition" type="text" required placeholder="4th">
+                </div>
+            </label>
+            <label class="field">
+                <span>Course</span>
+                <div class="input-wrap">
+                    <input id="course" name="course" type="text" required placeholder="CPSC 2230">
+                </div>
+            </label>
+            <label class="field">
+                <span>Condition</span>
+                <div class="input-wrap">
+                    <select id="condition" name="condition" required>
+                    <option value="" disabled selected>Select condition</option>
+                    <option value="New">New</option>
+                    <option value="Like New">Like New</option>
+                    <option value="Good">Good</option>
+                    <option value="Fair">Fair</option>
+                    <option value="Poor">Poor</option>
+                    </select>
+                </div>
+            </label>
+            <label class="field">
+                <span>Notes</span>
+                <div class="input-wrap">
+                    <textarea id="description" name="description" placeholder="Optional for now. This is not stored in the current schema."></textarea>
+                </div>
+            </label>
+        </div>
+
+        <p class="helper-text">The current database schema does not include a listing description column, so notes are collected for future use but not saved yet.</p>
+
+        <div class="action-row">
+            <button id="submitBtn" class="btn btn-primary" type="submit">Post Listing</button>
+            <a class="btn btn-secondary" href="{{ url_for('search.search_page') }}">Browse listings</a>
+        </div>
+
+        <div id="statusMessage" class="message"></div>
+    </form>
+</section>
+
+<script>
+    const form = document.getElementById("uploadForm");
+    const submitBtn = document.getElementById("submitBtn");
+    const statusMessage = document.getElementById("statusMessage");
+
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Posting...";
+        statusMessage.className = "message";
+        statusMessage.textContent = "";
+
+        const payload = {
+            title: document.getElementById("title").value,
+            author: document.getElementById("author").value,
+            isbn: document.getElementById("isbn").value,
+            publisher: document.getElementById("publisher").value,
+            edition: document.getElementById("edition").value,
+            course: document.getElementById("course").value,
+            condition: document.getElementById("condition").value,
+            description: document.getElementById("description").value
+        };
+
+        try {
+            const response = await fetch("{{ url_for('upload.upload_listing') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || "Failed to upload textbook.");
+            }
+
+            statusMessage.textContent = "Textbook uploaded successfully. Opening the listing now...";
+            statusMessage.className = "message success";
+            form.reset();
+
+            window.setTimeout(() => {
+                window.location.href = data.redirect_url;
+            }, 500);
+        } catch (error) {
+            statusMessage.textContent = error.message;
+            statusMessage.className = "message error";
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Post Listing";
+        }
+    });
+</script>
+{% endblock %}

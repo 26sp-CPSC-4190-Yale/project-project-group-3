@@ -1,22 +1,40 @@
-<!--
-    Base template
-    *Will be replaced later, just for testing rn
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Open Shelf</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    {% block head %}{% endblock %}
 </head>
 <body>
-    <nav>
-        <a href="{{ url_for('search.search_page') }}">Search</a>
-        <!--Logins to be added-->
-    </nav>
+    <div class="app-shell">
+        <header class="topbar">
+            <a class="brand-link" href="{{ url_for('index') }}">
+                <span class="brand-mark">OS</span>
+                <span class="brand-text">OpenShelf</span>
+            </a>
+            <nav class="nav-links">
+                <a href="{{ url_for('index') }}">Home</a>
+                <a href="{{ url_for('search.search_page') }}">Search</a>
+                <a href="{{ url_for('upload.upload_page') }}">Upload</a>
+                {% if current_user.id %}
+                <span class="user-pill">{{ current_user.username }}</span>
+                <button class="nav-button" type="button" id="logoutButton">Logout</button>
+                {% else %}
+                <a href="{{ url_for('index') }}#card">Sign In</a>
+                {% endif %}
+            </nav>
+        </header>
 
-    <main>
-        {% block content %}{% endblock %}
-    </main>
+        <main class="content-card">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>

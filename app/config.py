@@ -5,5 +5,7 @@ load_dotenv()
 
 class Config:
     SECRET_KEY = os.getenv("SECRET_KEY", "dev-fallback")
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
+    SQLALCHEMY_DATABASE_URI = os.getenv(
+        "DATABASE_URL", "postgresql://postgres@localhost/open_shelf_db"
+    )
     SQLALCHEMY_TRACK_MODIFICATIONS = False

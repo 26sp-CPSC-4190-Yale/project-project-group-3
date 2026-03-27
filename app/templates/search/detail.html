@@ -1,29 +1,44 @@
 {% extends "layout.html" %}
 {% block content %}
-<h1>{{ listing.title }}</h1>
+<section class="page-heading">
+    <div>
+        <p class="section-kicker">Listing Detail</p>
+        <h1>{{ listing.title }}</h1>
+    </div>
+    <div class="action-row">
+        <a class="btn btn-secondary" href="{{ url_for('search.search_page') }}">Back to search</a>
+        <a class="btn btn-primary" href="{{ url_for('upload.upload_page') }}">Post a similar book</a>
+    </div>
+</section>
 
-<dl>
-    <dt>Author</dt>
-    <dd>{{ listing.author }}</dd>
-
-    <dt>ISBN</dt>
-    <dd>{{ listing.isbn }}</dd>
-
-    <dt>Publisher</dt>
-    <dd>{{ listing.publisher }}</dd>
-
-    <dt>Edition</dt>
-    <dd>{{ listing.edition }}</dd>
-
-    <dt>Course</dt>
-    <dd>{{ listing.course }}</dd>
-
-    <dt>Condition</dt>
-    <dd>{{ listing.condition }}</dd>
-
-    <dt>Posted By</dt>
-    <dd>{{ listing.posted_by }}</dd>
+<dl class="detail-list">
+    <div class="detail-card">
+        <dt>Author</dt>
+        <dd>{{ listing.author }}</dd>
+    </div>
+    <div class="detail-card">
+        <dt>ISBN</dt>
+        <dd>{{ listing.isbn }}</dd>
+    </div>
+    <div class="detail-card">
+        <dt>Publisher</dt>
+        <dd>{{ listing.publisher }}</dd>
+    </div>
+    <div class="detail-card">
+        <dt>Edition</dt>
+        <dd>{{ listing.edition }}</dd>
+    </div>
+    <div class="detail-card">
+        <dt>Course</dt>
+        <dd>{{ listing.course }}</dd>
+    </div>
+    <div class="detail-card">
+        <dt>Condition</dt>
+        <dd>{{ listing.condition }}</dd>
+    </div>
+    <div class="detail-card">
+        <dt>Posted By</dt>
+        <dd>{{ listing.posted_by }}</dd>
+    </div>
 </dl>
-
-<a href="{{ url_for('search.search_page') }}">← Back to search</a>
 {% endblock %}
