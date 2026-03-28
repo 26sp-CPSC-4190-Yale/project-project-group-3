@@ -73,7 +73,7 @@ input[type="text"], input[type="email"], input[type="password"] {
   transition: border-color var(--ease), box-shadow var(--ease), background var(--ease);
 }
 input::placeholder { color: var(--ink-dim); }
-input:focus { border-color: var(--amber); background: #231f1a; box-shadow: 0 0 0 3px var(--amber-glow); }
+input:focus { border-color: var(--amber); background: #ffffff; box-shadow: 0 0 0 3px var(--amber-glow); }
 input.is-error { border-color: var(--red); box-shadow: 0 0 0 3px rgba(184,64,64,0.15); }
 
 .pw-toggle { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--ink-dim); padding: 4px; display: flex; align-items: center; transition: color var(--ease); }
