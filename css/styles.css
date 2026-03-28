@@ -2,16 +2,16 @@
 button { font: inherit; cursor: pointer; }
 
 :root {
-  --bg:        #0f0d0b;
-  --surface:   #1a1714;
-  --card-bg:   #201d19;
-  --border:    #2e2a25;
-  --border-hi: #4a4138;
-  --ink:       #f0ead8;
-  --ink-muted: #7a7265;
-  --ink-dim:   #4a4440;
-  --amber:     #d4882a;
-  --amber-glow:rgba(212,136,42,0.18);
+  --bg:        #ffffff;   
+  --surface:   #f8f8f8;   
+  --card-bg:   #ffffff;   
+  --border:    #e0e0e0;   
+  --border-hi: #c9c9c9;
+  --ink:       #111111;   
+  --ink-muted: #555555;   
+  --ink-dim:   #888888;   
+  --amber:     #d4882a;   
+  --amber-glow: rgba(212,136,42,0.2);
   --red:       #b84040;
   --radius-sm: 8px;
   --radius-lg: 20px;
