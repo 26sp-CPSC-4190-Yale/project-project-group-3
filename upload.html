@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open Shelf - Upload Textbook</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-hover: #4338CA;
+            --success: #10B981;
+            --error: #EF4444;
+            --text-main: #1F2937;
+            --text-light: #6B7280;
+            --bg-color: #F3F4F6;
+            --card-bg: #FFFFFF;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f6f8fb 0%, #e5e9f0 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: var(--text-main);
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            transform: translateY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: var(--text-light);
+            font-size: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #E5E7EB;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.2s ease;
+            background: #F9FAFB;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+            background: #FFF;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        .message.success {
+            display: block;
+            background: #D1FAE5;
+            color: #065F46;
+            border: 1px solid #34D399;
+        }
+
+        .message.error {
+            display: block;
+            background: #FEE2E2;
+            color: #991B1B;
+            border: 1px solid #F87171;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Spinner for loading state */
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        .loading .spinner {
+            display: inline-block;
+        }
+        .loading .button-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>Upload Textbook</h1>
+            <p>List a textbook on Open Shelf for other students.</p>
+        </div>
+
+        <form id="uploadForm">
+            <div class="form-group">
+                <label for="title">Title *</label>
+                <input type="text" id="title" name="title" required placeholder="e.g. Introduction to Algorithms">
+            </div>
+
+            <div class="form-group">
+                <label for="author">Author *</label>
+                <input type="text" id="author" name="author" required placeholder="e.g. Thomas H. Cormen">
+            </div>
+
+            <div class="form-group">
+                <label for="course">Course (Optional)</label>
+                <input type="text" id="course" name="course" placeholder="e.g. CS 101">
+            </div>
+
+            <div class="form-group">
+                <label for="condition">Condition *</label>
+                <select id="condition" name="condition" required>
+                    <option value="" disabled selected>Select condition</option>
+                    <option value="New">New</option>
+                    <option value="Like New">Like New</option>
+                    <option value="Good">Good</option>
+                    <option value="Fair">Fair</option>
+                    <option value="Poor">Poor</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description (Optional)</label>
+                <textarea id="description" name="description" placeholder="Any additional details..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit" id="submitBtn">
+                <span class="spinner"></span>
+                <span class="button-text">Post Listing</span>
+            </button>
+        </form>
+
+        <div id="statusMessage" class="message"></div>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const btn = document.getElementById('submitBtn');
+            const msgEl = document.getElementById('statusMessage');
+            
+            // Collect data
+            const payload = {
+                title: document.getElementById('title').value,
+                author: document.getElementById('author').value,
+                course: document.getElementById('course').value,
+                condition: document.getElementById('condition').value,
+                description: document.getElementById('description').value,
+            };
+
+            // Loading state
+            btn.classList.add('loading');
+            msgEl.className = 'message';
+            msgEl.textContent = '';
+
+            try {
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    msgEl.textContent = 'Textbook uploaded successfully!';
+                    msgEl.className = 'message success';
+                    document.getElementById('uploadForm').reset();
+                } else {
+                    msgEl.textContent = data.error || 'Failed to upload textbook.';
+                    msgEl.className = 'message error';
+                }
+            } catch (err) {
+                msgEl.textContent = 'Network error. Please try again.';
+                msgEl.className = 'message error';
+            } finally {
+                btn.classList.remove('loading');
+            }
+        });
+    </script>
+</body>
+</html>
