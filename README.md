@@ -21,6 +21,14 @@ The app uses PostgreSQL with the schema in `schema.sql` and the sample data in `
 4. Seed sample data:
    `sudo -u postgres psql -d open_shelf_db -f seed.sql`
 
+For testing:
+1. Open the database:
+   `psql -U postgres -d open_shelf_db`
+2. Reset the database:
+   `dropdb -U postgres open_shelf_db`
+   Followed by steps two through four above.
+
+
 ## App setup
 
 1. Create and activate a virtual environment:
