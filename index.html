@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenShelf — Sign In</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+  <div class="auth-shell">
+ 
+    <div class="auth-hero">
+      <div class="auth-logo">open<span>shelf</span></div>
+      <p class="auth-tagline">Buy and sell textbooks with students near you</p>
+      <div class="auth-bubbles">
+        <div class="bubble b1">📚</div>
+        <div class="bubble b2">💸</div>
+        <div class="bubble b3">🎓</div>
+        <div class="bubble b4">📖</div>
+        <div class="bubble b5">✏️</div>
+      </div>
+    </div>
+ 
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-signin" onclick="switchTab('signin')">Sign in</button>
+        <button class="auth-tab" id="tab-signup" onclick="switchTab('signup')">Create account</button>
+      </div>
+ 
+      <!-- Sign In Form -->
+      <form id="form-signin" class="auth-form" onsubmit="handleSignIn(event)">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" type="email" placeholder="you@yale.edu" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="input-wrap">
+            <input class="form-input" type="password" id="signin-pw" placeholder="••••••••" required>
+            <button type="button" class="pw-toggle" onclick="togglePw('signin-pw', this)">Show</button>
+          </div>
+        </div>
+        <div class="auth-forgot"><a href="#">Forgot password?</a></div>
+        <button type="submit" class="btn btn-primary btn-full auth-submit">Sign in</button>
+        <div class="auth-divider"><span>or</span></div>
+        <button type="button" class="btn btn-outline btn-full" onclick="handleGuest()">Continue as guest</button>
+      </form>
+ 
+      <!-- Sign Up Form -->
+      <form id="form-signup" class="auth-form hidden" onsubmit="handleSignUp(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">First name</label>
+            <input class="form-input" type="text" placeholder="Ayushi" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last name</label>
+            <input class="form-input" type="text" placeholder="Das" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">School email</label>
+          <input class="form-input" type="email" placeholder="you@yale.edu" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">University</label>
+          <select class="form-input">
+            <option value="">Select your school...</option>
+            <option>Yale University</option>
+            <option>Southern CT State University</option>
+            <option>University of New Haven</option>
+            <option>Quinnipiac University</option>
+            <option>University of Hartford</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="input-wrap">
+            <input class="form-input" type="password" id="signup-pw" placeholder="At least 8 characters" required>
+            <button type="button" class="pw-toggle" onclick="togglePw('signup-pw', this)">Show</button>
+          </div>
+        </div>
+        <div class="auth-terms">
+          By creating an account you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+        </div>
+        <button type="submit" class="btn btn-primary btn-full auth-submit">Create account</button>
+      </form>
+    </div>
+ 
+  </div>
+ 
+  <script>
+    function switchTab(tab) {
+      document.getElementById('tab-signin').classList.toggle('active', tab === 'signin');
+      document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+      document.getElementById('form-signin').classList.toggle('hidden', tab !== 'signin');
+      document.getElementById('form-signup').classList.toggle('hidden', tab !== 'signup');
+    }
+ 
+    function togglePw(id, btn) {
+      const inp = document.getElementById(id);
+      if (inp.type === 'password') { inp.type = 'text';     btn.textContent = 'Hide'; }
+      else                         { inp.type = 'password'; btn.textContent = 'Show'; }
+    }
+ 
+    function handleSignIn(e) {
+      e.preventDefault();
+      window.location.href = 'home.html';
+    }
+ 
+    function handleSignUp(e) {
+      e.preventDefault();
+      window.location.href = 'home.html';
+    }
+ 
+    function handleGuest() {
+      window.location.href = 'home.html';
+    }
+  </script>
+</body>
+</html>
