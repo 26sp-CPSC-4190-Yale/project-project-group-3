@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenShelf — Home</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/home.css">
+</head>
+<body>
+  <div class="app-shell">
+ 
+    <nav class="topnav">
+      <span class="topnav-brand">open<span>shelf</span></span>
+      <div class="topnav-right">
+        <div class="avatar-circle">AY</div>
+      </div>
+    </nav>
+ 
+    <main class="page-content">
+ 
+      <div class="greeting">
+        <h1 class="greeting-title">Hey, Ayushi! 👋</h1>
+        <p class="greeting-sub">Here's what's happening</p>
+      </div>
+ 
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-num">3</div>
+          <div class="stat-lbl">Listed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">7</div>
+          <div class="stat-lbl">Saved</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">$84</div>
+          <div class="stat-lbl">Earned</div>
+        </div>
+      </div>
+ 
+      <div class="quick-actions">
+        <button class="quick-btn" onclick="window.location.href='search.html'">
+          <span class="quick-icon" style="background:var(--purple-light)">🔍</span>
+          <span>Find books</span>
+        </button>
+        <button class="quick-btn" onclick="showListModal()">
+          <span class="quick-icon" style="background:var(--amber-light)">➕</span>
+          <span>List a book</span>
+        </button>
+        <button class="quick-btn" onclick="window.location.href='messaging.html'">
+          <span class="quick-icon" style="background:var(--teal-light)">💬</span>
+          <span>Messages</span>
+        </button>
+        <button class="quick-btn" onclick="window.location.href='saved.html'">
+          <span class="quick-icon" style="background:var(--pink-light)">❤️</span>
+          <span>Saved</span>
+        </button>
+      </div>
+ 
+      <div class="section-label">Your active listings</div>
+      <div class="listings-list" id="listings-list"></div>
+ 
+      <div class="section-label" style="margin-top:24px">Recent activity</div>
+      <div class="activity-list" id="activity-list"></div>
+ 
+      <div class="section-label" style="margin-top:24px">Hot deals near you 🔥</div>
+      <div class="hot-scroll" id="hot-scroll"></div>
+ 
+    </main>
+ 
+    <nav class="botnav">
+      <a href="home.html" class="nav-btn active">
+        <svg viewBox="0 0 22 22" fill="none"><rect x="2" y="2" width="8" height="8" rx="2" fill="currentColor" opacity=".9"/><rect x="12" y="2" width="8" height="8" rx="2" fill="currentColor" opacity=".4"/><rect x="2" y="12" width="8" height="8" rx="2" fill="currentColor" opacity=".4"/><rect x="12" y="12" width="8" height="8" rx="2" fill="currentColor" opacity=".4"/></svg>
+        Home <div class="nav-dot"></div>
+      </a>
+      <a href="search.html" class="nav-btn">
+        <svg viewBox="0 0 22 22" fill="none"><circle cx="9.5" cy="9.5" r="5.5" stroke="currentColor" stroke-width="1.5"/><line x1="13.5" y1="13.5" x2="19" y2="19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Search <div class="nav-dot"></div>
+      </a>
+      <a href="saved.html" class="nav-btn">
+        <svg viewBox="0 0 22 22" fill="none"><path d="M11 17L4 10.5C4 7.5 6 5 8.5 5C9.8 5 11 6 11 6C11 6 12.2 5 13.5 5C16 5 18 7.5 18 10.5L11 17Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        Saved <div class="nav-dot"></div>
+      </a>
+      <a href="messaging.html" class="nav-btn">
+        <svg viewBox="0 0 22 22" fill="none"><path d="M3 4h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H7l-4 3V5a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        Messages <div class="nav-dot"></div>
+      </a>
+    </nav>
+ 
+  </div>
+ 
+  <!-- List a book modal -->
+  <div class="modal-overlay hidden" id="list-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">List a book</h3>
+        <button class="modal-close" onclick="hideListModal()">✕</button>
+      </div>
+      <form onsubmit="submitListing(event)">
+        <div class="form-group">
+          <label class="form-label">Book title</label>
+          <input class="form-input" type="text" placeholder="e.g. Organic Chemistry, 9th Ed." required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Course code</label>
+          <input class="form-input" type="text" placeholder="e.g. CHEM 220">
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Price ($)</label>
+            <input class="form-input" type="number" placeholder="0" min="0" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Condition</label>
+            <select class="form-input">
+              <option>Like new</option>
+              <option>Good</option>
+              <option>Highlighted</option>
+              <option>Worn</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full" style="margin-top:8px">Post listing</button>
+      </form>
+    </div>
+  </div>
+ 
+  <script src="js/data.js"></script>
+  <script src="js/home.js"></script>
+</body>
+</html>
