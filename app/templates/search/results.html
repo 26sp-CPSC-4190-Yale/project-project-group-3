@@ -22,7 +22,7 @@
                 <th>Course</th>
                 <th>Condition</th>
                 <th>Posted By</th>
-                <th></th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -34,7 +34,23 @@
                 <td>{{ l.course }}</td>
                 <td>{{ l.condition }}</td>
                 <td>{{ l.posted_by }}</td>
-                <td><a href="{{ url_for('search.listing_detail', listing_id=l.listing_id) }}">View listing</a></td>
+                <td>
+                    <div>
+                        <a href="{{ url_for('search.listing_detail', listing_id=l.listing_id) }}">View listing</a>
+                        {% if current_user.id %}
+
+                            {% if l.listing_id in saved_ids %}
+                                <form action="{{ url_for('listings.unsave_listing', listing_id=l.listing_id) }}" method="POST">
+                                    <button type="submit">Unsave</button>
+                                </form>
+                            {% else %}
+                                <form action="{{ url_for('listings.save_listing', listing_id=l.listing_id) }}" method="POST">
+                                    <button type="submit">Save</button>
+                                </form>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </td>
             </tr>
             {% endfor %}
         </tbody>

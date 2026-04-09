@@ -23,6 +23,7 @@ def create_app():
     from app.routes.search import search_bp
     from app.routes.upload import upload_bp
     from app.routes.auth import auth_bp
+    from app.routes.listings import listings_bp
 
     @app.route("/")
     def index():
@@ -32,5 +33,6 @@ def create_app():
     app.register_blueprint(search_bp)
     app.register_blueprint(upload_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(listings_bp)
 
     return app

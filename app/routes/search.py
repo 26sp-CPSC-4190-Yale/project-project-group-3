@@ -9,7 +9,7 @@ Handles all search-related routes
 Update SQL queries 
 """
 
-from flask import Blueprint, render_template, request, abort
+from flask import Blueprint, render_template, request, abort, session
 from app import db
 from sqlalchemy import text
 
@@ -81,7 +81,15 @@ def search_results():
     result = db.session.execute(full_query, {"q": like})
     listings = result.mappings().all()
 
-    return render_template("search/results.html", listings=listings, query=q)
+    saved_ids = []
+    if session.get('user_id'):
+        saved_query = text("SELECT listing_id FROM saved_listings WHERE user_id = :user_id")
+        result = db.session.execute(saved_query, {"user_id": session.get('user_id')}).fetchall()
+
+        # Extract the IDs
+        saved_ids = [row[0] for row in result]
+
+    return render_template("search/results.html", listings=listings, saved_ids=saved_ids)
 
 """
 Route: Signle listing detail
@@ -117,3 +125,4 @@ def listing_detail(listing_id):
         abort(404)
 
     return render_template("search/detail.html", listing=listing)
+

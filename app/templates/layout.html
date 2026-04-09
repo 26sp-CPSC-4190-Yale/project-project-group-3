@@ -22,7 +22,9 @@
                 <a href="{{ url_for('search.search_page') }}">Search</a>
                 <a href="{{ url_for('upload.upload_page') }}">Upload</a>
                 {% if current_user.id %}
-                <span class="user-pill">{{ current_user.username }}</span>
+                <a href="{{ url_for('listings.profile_page') }}" class="user-pill" style="text-decoration: none; cursor: pointer;">
+                    {{ current_user.username }}
+                </a>
                 <button class="nav-button" type="button" id="logoutButton">Logout</button>
                 {% else %}
                 <a href="{{ url_for('index') }}#card">Sign In</a>

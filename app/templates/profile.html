@@ -1,0 +1,98 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<section>
+    <div>
+        <p>Account Dashboard</p>
+        <h1>My Profile</h1>
+    </div>
+</section>
+
+<section>
+    <h2>My Saved Textbooks</h2>
+
+    {% if saved_listings %}
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Course</th>
+                    <th>Condition</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for l in saved_listings %}
+                <tr>
+                    <td>{{ l.title }}</td>
+                    <td>{{ l.author }}</td>
+                    <td>{{ l.course }}</td>
+                    <td>{{ l.condition }}</td>
+                    <td>
+                        <div>
+                            <a href="{{ url_for('search.listing_detail', listing_id=l.listing_id) }}">View</a>
+
+                            <form action="{{ url_for('listings.unsave_listing',  listing_id=l.listing_id) }}" method="POST">
+                                <button type="submit">Unsave</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <p>You haven't saved any listings yet</p>
+    {% endif %}
+</section>
+
+<hr>
+
+<section>
+    <h2>Listings I've Posted</h2>
+
+    {% if posted_listings %}
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Course</th>
+                    <th>Condition</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for l in posted_listings %}
+                <tr>
+                    <td>{{ l.title }}</td>
+                    <td>{{ l.author }}</td>
+                    <td>{{ l.course }}</td>
+                    <td>{{ l.condition }}</td>
+                    <td>
+                        <div style="display: flex; gap: 10px;">
+                            <a class="btn btn-secondary" href="{{ url_for('search.listing_detail', listing_id=l.listing_id) }}">View</a>
+                            
+                            <form action="{{ url_for('listings.delete_listing', listing_id=l.listing_id) }}" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete this listing?');">
+                                <button type="submit" class="btn btn-primary" style="background-color: #d9534f;">Delete</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <p>You haven't posted any textbooks yet.</p>
+    {% endif %}
+</section>
+
+{% endblock %}
