@@ -1,0 +1,339 @@
+/* =============================================
+   OpenShelf — styles.css
+   Shared styles across all pages
+   ============================================= */
+ 
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+ 
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+:root {
+  --purple:       #7F77DD;
+  --purple-light: #EEEDFE;
+  --purple-dark:  #3C3489;
+  --amber:        #EF9F27;
+  --amber-light:  #FAEEDA;
+  --amber-dark:   #633806;
+  --teal:         #1D9E75;
+  --teal-light:   #E1F5EE;
+  --teal-dark:    #085041;
+  --coral:        #D85A30;
+  --coral-light:  #FAECE7;
+  --coral-dark:   #712B13;
+  --pink:         #D4537E;
+  --pink-light:   #FBEAF0;
+  --pink-dark:    #72243E;
+  --green:        #639922;
+  --green-light:  #EAF3DE;
+  --green-dark:   #27500A;
+  --gray-50:      #F9F9F7;
+  --gray-100:     #F1EFE8;
+  --gray-200:     #D3D1C7;
+  --gray-400:     #888780;
+  --gray-600:     #5F5E5A;
+  --gray-900:     #1A1A18;
+  --white:        #FFFFFF;
+  --radius-sm:    6px;
+  --radius-md:    10px;
+  --radius-lg:    16px;
+  --radius-xl:    24px;
+  --radius-full:  9999px;
+  --font:         'Plus Jakarta Sans', system-ui, sans-serif;
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.1);
+}
+ 
+html { font-size: 16px; }
+ 
+body {
+  font-family: var(--font);
+  background: var(--gray-50);
+  color: var(--gray-900);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+ 
+a { color: inherit; text-decoration: none; }
+button { font-family: var(--font); cursor: pointer; }
+input, textarea, select { font-family: var(--font); }
+ 
+/* ── App shell ── */
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: 480px;
+  margin: 0 auto;
+  background: var(--gray-50);
+  position: relative;
+}
+ 
+/* ── Top nav ── */
+.topnav {
+  background: var(--purple);
+  padding: 0 20px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  flex-shrink: 0;
+}
+ 
+.topnav-brand {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--white);
+  letter-spacing: -0.5px;
+}
+ 
+.topnav-brand span { color: var(--amber); }
+ 
+.topnav-right { display: flex; align-items: center; gap: 10px; }
+ 
+.avatar-circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--amber);
+  color: var(--amber-dark);
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+ 
+/* ── Bottom nav ── */
+.botnav {
+  background: var(--white);
+  border-top: 1px solid var(--gray-100);
+  display: flex;
+  position: sticky;
+  bottom: 0;
+  z-index: 100;
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
+}
+ 
+.nav-btn {
+  flex: 1;
+  padding: 8px 4px 10px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--gray-400);
+  transition: color 0.15s;
+  text-decoration: none;
+}
+ 
+.nav-btn:hover { color: var(--purple); }
+.nav-btn.active { color: var(--purple); }
+ 
+.nav-btn svg { width: 22px; height: 22px; }
+ 
+.nav-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--purple);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+ 
+.nav-btn.active .nav-dot { opacity: 1; }
+ 
+/* ── Page content ── */
+.page-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+ 
+/* ── Section labels ── */
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 12px;
+}
+ 
+/* ── Cards ── */
+.card {
+  background: var(--white);
+  border: 1px solid var(--gray-100);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+}
+ 
+/* ── Pills / badges ── */
+.pill {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 600;
+}
+ 
+.pill-purple  { background: var(--purple-light); color: var(--purple-dark); }
+.pill-amber   { background: var(--amber-light);  color: var(--amber-dark); }
+.pill-teal    { background: var(--teal-light);   color: var(--teal-dark); }
+.pill-coral   { background: var(--coral-light);  color: var(--coral-dark); }
+.pill-green   { background: var(--green-light);  color: var(--green-dark); }
+.pill-pink    { background: var(--pink-light);   color: var(--pink-dark); }
+ 
+.badge-new  { background: var(--teal-light);  color: var(--teal);  font-size: 10px; padding: 2px 7px; border-radius: var(--radius-sm); font-weight: 600; }
+.badge-hot  { background: var(--coral-light); color: var(--coral); font-size: 10px; padding: 2px 7px; border-radius: var(--radius-sm); font-weight: 600; }
+.badge-deal { background: var(--amber-light); color: var(--amber-dark); font-size: 10px; padding: 2px 7px; border-radius: var(--radius-sm); font-weight: 600; }
+ 
+/* ── Buttons ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 11px 22px;
+  border-radius: var(--radius-full);
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.18s;
+  line-height: 1;
+}
+ 
+.btn-primary {
+  background: var(--purple);
+  color: var(--white);
+}
+.btn-primary:hover { background: var(--purple-dark); }
+ 
+.btn-secondary {
+  background: var(--purple-light);
+  color: var(--purple-dark);
+}
+.btn-secondary:hover { background: #dddcfc; }
+ 
+.btn-outline {
+  background: transparent;
+  color: var(--purple);
+  border: 1.5px solid var(--purple);
+}
+.btn-outline:hover { background: var(--purple-light); }
+ 
+.btn-full { width: 100%; }
+ 
+/* ── Form inputs ── */
+.form-group { margin-bottom: 16px; }
+ 
+.form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-600);
+  margin-bottom: 6px;
+}
+ 
+.form-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  color: var(--gray-900);
+  background: var(--white);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+ 
+.form-input:focus {
+  border-color: var(--purple);
+  box-shadow: 0 0 0 3px rgba(127,119,221,0.15);
+}
+ 
+.form-input::placeholder { color: var(--gray-400); }
+ 
+/* ── Book cover decorators ── */
+.book-cover {
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 24px;
+}
+ 
+/* ── Price display ── */
+.price-main { font-size: 16px; font-weight: 700; color: var(--purple-dark); }
+.price-orig { font-size: 11px; color: var(--gray-400); text-decoration: line-through; }
+ 
+/* ── Heart / save button ── */
+.heart-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--pink-light);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: var(--pink);
+  transition: transform 0.15s;
+  flex-shrink: 0;
+}
+ 
+.heart-btn:hover { transform: scale(1.15); }
+ 
+/* ── Divider ── */
+.divider {
+  border: none;
+  border-top: 1px solid var(--gray-100);
+  margin: 16px 0;
+}
+ 
+/* ── Empty state ── */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--gray-400);
+}
+ 
+.empty-state-icon { font-size: 40px; margin-bottom: 12px; }
+.empty-state-title { font-size: 16px; font-weight: 600; color: var(--gray-600); margin-bottom: 6px; }
+.empty-state-text { font-size: 13px; line-height: 1.6; }
+ 
+/* ── Toast notification ── */
+.toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--gray-900);
+  color: var(--white);
+  padding: 10px 20px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0;
+  transition: all 0.3s;
+  z-index: 999;
+  white-space: nowrap;
+}
+ 
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
