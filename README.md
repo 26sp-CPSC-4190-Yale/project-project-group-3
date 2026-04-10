@@ -11,8 +11,21 @@ This repo now runs as one Flask app with:
 
 ## Structure
 - `index.html`
-- `css/styles.css`
-- `js/app.js`
+- `styles.css`
+- `data.json`
+- `messaging.html`
+- `messaging.css`
+- `messaging.js`
+- `saved.js`
+- `saved.html`
+- `saved.css`
+- `search.css`
+- `search.html`
+- `search.js`
+- `home.css`
+- `home.js`
+- `home.html`
+- `auth.css`
 
 ## Features
 
@@ -22,6 +35,10 @@ This repo now runs as one Flask app with:
 - Password strength meter
 - Form validation
 - Toast notifications
+- Developed page dedicated to featuring saved textbooks
+- Developed page dedicated to messaging
+- Developed page to enhance searching capabilities
+- Developed home page
 
 ## Database setup
 
