@@ -1,16 +1,19 @@
 from flask import Flask, render_template, session
 from flask_sqlalchemy import SQLAlchemy
+from flask_socketio import SocketIO
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from app.config import Config
 
 db = SQLAlchemy()
+socketio = SocketIO()
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
     db.init_app(app)
+    socketio.init_app(app)
 
     @app.context_processor
     def inject_auth_state():
@@ -26,6 +29,7 @@ def create_app():
     from app.routes.upload import upload_bp
     from app.routes.auth import auth_bp
     from app.routes.listings import listings_bp
+    from app.routes.chat import chat_bp, register_socket_events
 
     @app.route("/")
     def index():
@@ -85,5 +89,8 @@ def create_app():
     app.register_blueprint(upload_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(listings_bp)
+    app.register_blueprint(chat_bp)
+
+    register_socket_events(socketio)
 
     return app

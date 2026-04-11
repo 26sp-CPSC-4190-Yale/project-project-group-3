@@ -43,7 +43,10 @@
 
       <div class="sort-row">
         <a class="btn btn-secondary" href="{{ url_for('search.search_page') }}">Back to search</a>
-        <a class="btn btn-primary" href="{{ url_for('upload.upload_page') }}">Post similar</a>
+        {% if current_user.id %}
+        <a class="btn btn-primary" href="{{ url_for('chat.chat_room', listing_id=listing.listing_id) }}">Chat</a>
+        {% endif %}
+        <a class="btn btn-outline" href="{{ url_for('upload.upload_page') }}">Post similar</a>
       </div>
     </main>
 

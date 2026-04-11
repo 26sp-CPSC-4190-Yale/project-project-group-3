@@ -190,22 +190,30 @@
 
     async function handleSignIn(event) {
       event.preventDefault();
-      const data = await sendJson('{{ url_for('auth.login') }}', {
-        email: document.getElementById('signin-email').value,
-        password: document.getElementById('signin-pw').value
-      });
-      window.location.href = data.redirect_url || '{{ url_for('search.search_page') }}';
+      try {
+        const data = await sendJson('{{ url_for('auth.login') }}', {
+          email: document.getElementById('signin-email').value,
+          password: document.getElementById('signin-pw').value
+        });
+        window.location.href = data.redirect_url || '{{ url_for('search.search_page') }}';
+      } catch (err) {
+        alert(err.message);
+      }
     }
 
     async function handleSignUp(event) {
       event.preventDefault();
-      const data = await sendJson('{{ url_for('auth.signup') }}', {
-        first_name: document.getElementById('signup-first').value,
-        last_name: document.getElementById('signup-last').value,
-        email: document.getElementById('signup-email').value,
-        password: document.getElementById('signup-pw').value
-      });
-      window.location.href = data.redirect_url || '{{ url_for('search.search_page') }}';
+      try {
+        const data = await sendJson('{{ url_for('auth.signup') }}', {
+          first_name: document.getElementById('signup-first').value,
+          last_name: document.getElementById('signup-last').value,
+          email: document.getElementById('signup-email').value,
+          password: document.getElementById('signup-pw').value
+        });
+        window.location.href = data.redirect_url || '{{ url_for('search.search_page') }}';
+      } catch (err) {
+        alert(err.message);
+      }
     }
   </script>
   {% endif %}
