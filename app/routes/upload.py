@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, render_template, request, session, url_for
+from flask import Blueprint, jsonify, redirect, render_template, request, session, url_for
 from sqlalchemy import text
 
 from app import db
@@ -8,11 +8,16 @@ upload_bp = Blueprint("upload", __name__)
 
 @upload_bp.route("/upload")
 def upload_page():
+    if not session.get("user_id"):
+        return redirect(url_for("index"))
     return render_template("upload/form.html")
 
 
 @upload_bp.route("/api/upload", methods=["POST"])
 def upload_listing():
+    if not session.get("user_id"):
+        return jsonify({"error": "Please sign in before posting a textbook."}), 401
+
     if not request.is_json:
         return jsonify({"error": "Request must be JSON"}), 400
 
@@ -34,7 +39,7 @@ def upload_listing():
         ), 400
 
     payload = {field: str(data[field]).strip() for field in required_fields}
-    creator_id = session.get("user_id", 1)
+    creator_id = session["user_id"]
 
     try:
         existing_book = db.session.execute(

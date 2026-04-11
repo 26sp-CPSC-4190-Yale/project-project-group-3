@@ -337,3 +337,7 @@ input, textarea, select { font-family: var(--font); }
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
+
+.hidden {
+  display: none !important;
+}

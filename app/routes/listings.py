@@ -3,7 +3,7 @@ Listings Flask blueprintfor user profile and listing management
 It handles rendering teh user's profile dashboaard (which displays saved & posted listings)
 and provides endpoints for saving, unsaving, and deleting listings
 """
-from flask import Blueprint, render_template, session, redirect, url_for, request, flash, request
+from flask import Blueprint, render_template, session, redirect, url_for, request, flash
 from app import db
 from sqlalchemy import text
 

@@ -1,44 +1,58 @@
-{% extends "layout.html" %}
-{% block content %}
-<section class="page-heading">
-    <div>
-        <p class="section-kicker">Listing Detail</p>
-        <h1>{{ listing.title }}</h1>
-    </div>
-    <div class="action-row">
-        <a class="btn btn-secondary" href="{{ url_for('search.search_page') }}">Back to search</a>
-        <a class="btn btn-primary" href="{{ url_for('upload.upload_page') }}">Post a similar book</a>
-    </div>
-</section>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenShelf — {{ listing.title }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='frontend/styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='frontend/search.css') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <nav class="topnav">
+      <span class="topnav-brand">open<span>shelf</span></span>
+      <div class="topnav-right">
+        {% if current_user.id %}
+        <div class="avatar-circle">{{ (current_user.username or 'OS')[:2]|upper }}</div>
+        {% else %}
+        <a class="btn btn-secondary" href="{{ url_for('index') }}">Sign in</a>
+        {% endif %}
+      </div>
+    </nav>
 
-<dl class="detail-list">
-    <div class="detail-card">
-        <dt>Author</dt>
-        <dd>{{ listing.author }}</dd>
-    </div>
-    <div class="detail-card">
-        <dt>ISBN</dt>
-        <dd>{{ listing.isbn }}</dd>
-    </div>
-    <div class="detail-card">
-        <dt>Publisher</dt>
-        <dd>{{ listing.publisher }}</dd>
-    </div>
-    <div class="detail-card">
-        <dt>Edition</dt>
-        <dd>{{ listing.edition }}</dd>
-    </div>
-    <div class="detail-card">
-        <dt>Course</dt>
-        <dd>{{ listing.course }}</dd>
-    </div>
-    <div class="detail-card">
-        <dt>Condition</dt>
-        <dd>{{ listing.condition }}</dd>
-    </div>
-    <div class="detail-card">
-        <dt>Posted By</dt>
-        <dd>{{ listing.posted_by }}</dd>
-    </div>
-</dl>
-{% endblock %}
+    <main class="page-content">
+      <div class="result-card" style="align-items:flex-start">
+        <div class="result-cover" style="background:var(--purple-light); width:86px; height:112px">📚</div>
+        <div class="result-info">
+          <div class="result-title">{{ listing.title }}</div>
+          <div class="result-author">{{ listing.author }}</div>
+          <div class="result-tags">
+            <span class="pill pill-purple">{{ listing.course }}</span>
+            <span class="pill pill-green">{{ listing.condition }}</span>
+          </div>
+          <div class="result-seller">Listed by {{ listing.posted_by }}</div>
+        </div>
+      </div>
+
+      <div class="section-label" style="margin-top:24px">Book details</div>
+      <div class="result-list">
+        <div class="card"><strong>ISBN</strong><br>{{ listing.isbn }}</div>
+        <div class="card"><strong>Publisher</strong><br>{{ listing.publisher }}</div>
+        <div class="card"><strong>Edition</strong><br>{{ listing.edition }}</div>
+      </div>
+
+      <div class="sort-row">
+        <a class="btn btn-secondary" href="{{ url_for('search.search_page') }}">Back to search</a>
+        <a class="btn btn-primary" href="{{ url_for('upload.upload_page') }}">Post similar</a>
+      </div>
+    </main>
+
+    <nav class="botnav">
+      <a href="{{ url_for('index') }}" class="nav-btn">Home <div class="nav-dot"></div></a>
+      <a href="{{ url_for('search.search_page') }}" class="nav-btn active">Search <div class="nav-dot"></div></a>
+      <a href="{{ url_for('listings.profile_page') }}" class="nav-btn">Saved <div class="nav-dot"></div></a>
+      <a href="{{ url_for('upload.upload_page') }}" class="nav-btn">Upload <div class="nav-dot"></div></a>
+    </nav>
+  </div>
+</body>
+</html>

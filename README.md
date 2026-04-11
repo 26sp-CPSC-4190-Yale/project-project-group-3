@@ -12,15 +12,13 @@ This repo now runs as one Flask app with:
 ## Structure
 - `app/` contains the Flask app, backend routes, static assets, and Jinja templates.
 - `schema.sql` and `seed.sql` define and populate the PostgreSQL database.
-- `home/`, `search/`, `saved/`, `messaging/`, and `login-signup/` contain standalone frontend prototypes.
-- `styles.css` and `data.js` are shared by the standalone frontend prototype pages.
+- `app/static/frontend/` contains the frontend styles ported from the prototype pages.
 
 ## Features
 
 - Flask routes for auth, search, upload, profile, saved listings, and listing management.
 - PostgreSQL-backed textbook search and listing detail pages.
-- Standalone frontend prototype pages for home, search, saved listings, messaging, and login/sign-up.
-- Shared prototype styling, sample data, bottom navigation, and toast notifications.
+- Backend-connected frontend for home, login/sign-up, search, saved listings, posted listings, and upload.
 
 ## Database setup
 
