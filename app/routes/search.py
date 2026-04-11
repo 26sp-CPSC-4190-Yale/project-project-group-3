@@ -89,7 +89,12 @@ def search_results():
         # Extract the IDs
         saved_ids = [row[0] for row in result]
 
-    return render_template("search/results.html", listings=listings, saved_ids=saved_ids)
+    return render_template(
+        "search/results.html",
+        listings=listings,
+        query=q,
+        saved_ids=saved_ids,
+    )
 
 """
 Route: Signle listing detail
@@ -125,4 +130,3 @@ def listing_detail(listing_id):
         abort(404)
 
     return render_template("search/detail.html", listing=listing)
-
