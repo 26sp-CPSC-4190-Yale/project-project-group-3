@@ -1,158 +1,221 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenShelf</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenShelf</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='frontend/styles.css') }}">
+  {% if current_user.id %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='frontend/home.css') }}">
+  {% else %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='frontend/auth.css') }}">
+  {% endif %}
 </head>
-<body class="landing-page">
-    <canvas id="bgCanvas"></canvas>
-    <div class="page-shell">
-        <header class="hero-header">
-            <a class="brand" href="{{ url_for('index') }}">
-                <span class="brand-mark">OS</span>
-                <span class="brand-text">OpenShelf</span>
-            </a>
-            <nav class="hero-nav">
-                <a href="{{ url_for('search.search_page') }}">Search</a>
-                <a href="{{ url_for('upload.upload_page') }}">Sell a Book</a>
-                {% if current_user.id %}
-                <span class="user-pill">{{ current_user.username }}</span>
-                <button class="nav-button" type="button" id="logoutButton">Logout</button>
-                {% endif %}
-            </nav>
-        </header>
+<body>
+  {% if current_user.id %}
+  <div class="app-shell">
+    <nav class="topnav">
+      <span class="topnav-brand">open<span>shelf</span></span>
+      <div class="topnav-right">
+        <form action="{{ url_for('auth.logout', redirect=1) }}" method="POST">
+          <button class="btn btn-secondary" type="submit">Logout</button>
+        </form>
+        <div class="avatar-circle">{{ (current_user.username or 'OS')[:2]|upper }}</div>
+      </div>
+    </nav>
 
-        <main class="hero-grid">
-            <section class="hero-copy">
-                <p class="eyebrow">Campus textbook exchange</p>
-                <h1>Access your library, then trade what you no longer need.</h1>
-                <p class="hero-body">
-                    Your teammate's new front-end now acts as the front door for the MVP.
-                    Browse listings, post textbooks, and keep the search flow connected to the shared Postgres data.
-                </p>
-                <div class="hero-actions">
-                    <a class="btn btn-primary" href="{{ url_for('search.search_page') }}">Browse Listings</a>
-                    <a class="btn btn-secondary" href="{{ url_for('upload.upload_page') }}">Post a Textbook</a>
-                </div>
-                <ul class="hero-stats">
-                    <li><strong>Search</strong><span>ISBN, title, author, or course</span></li>
-                    <li><strong>Upload</strong><span>Create listings tied to the shared schema</span></li>
-                    <li><strong>MVP</strong><span>One Flask app instead of split prototypes</span></li>
-                </ul>
-            </section>
+    <main class="page-content">
+      <div class="greeting">
+        <h1 class="greeting-title">Hey, {{ current_user.username }}!</h1>
+        <p class="greeting-sub">Here's what's happening in your OpenShelf account.</p>
+      </div>
 
-            <section class="auth-card" id="card">
-                <div class="tabs" role="tablist" aria-label="Account options">
-                    <button class="tab active" id="tab-login" role="tab" aria-selected="true" aria-controls="panel-login" data-target="login">Sign In</button>
-                    <button class="tab" id="tab-signup" role="tab" aria-selected="false" aria-controls="panel-signup" data-target="signup">Create Account</button>
-                    <span class="tab-indicator" id="tabIndicator"></span>
-                </div>
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-num">{{ stats.listed }}</div>
+          <div class="stat-lbl">Listed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">{{ stats.saved }}</div>
+          <div class="stat-lbl">Saved</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">{{ hot_listings|length }}</div>
+          <div class="stat-lbl">Recent</div>
+        </div>
+      </div>
 
-                <section class="panel active" id="panel-login" role="tabpanel" aria-labelledby="tab-login">
-                    <div class="panel-intro">
-                        <p class="kicker">Prototype Access</p>
-                        <h2>Welcome back.</h2>
-                        <p>Sign in with an existing account to personalize uploads and keep the MVP connected to a real user.</p>
-                    </div>
-                    <form class="form" id="loginForm" novalidate>
-                        <label class="field">
-                            <span>Email address</span>
-                            <div class="input-wrap">
-                                <input type="email" id="login-email" placeholder="you@university.edu" autocomplete="email">
-                            </div>
-                            <span class="field-error" id="login-email-err"></span>
-                        </label>
+      <div class="quick-actions">
+        <button class="quick-btn" onclick="window.location.href='{{ url_for('search.search_page') }}'">
+          <span class="quick-icon" style="background:var(--purple-light)">🔍</span>
+          <span>Find books</span>
+        </button>
+        <button class="quick-btn" onclick="window.location.href='{{ url_for('upload.upload_page') }}'">
+          <span class="quick-icon" style="background:var(--amber-light)">➕</span>
+          <span>List a book</span>
+        </button>
+        <button class="quick-btn" onclick="window.location.href='{{ url_for('listings.profile_page') }}'">
+          <span class="quick-icon" style="background:var(--pink-light)">❤️</span>
+          <span>Saved</span>
+        </button>
+      </div>
 
-                        <label class="field">
-                            <span>Password</span>
-                            <div class="input-wrap">
-                                <input type="password" id="login-pw" placeholder="••••••••" autocomplete="current-password">
-                                <button type="button" class="pw-toggle" data-target="login-pw" aria-label="Toggle password visibility">Show</button>
-                            </div>
-                            <span class="field-error" id="login-pw-err"></span>
-                        </label>
+      <div class="section-label">Your active listings</div>
+      <div class="listings-list">
+        {% if active_listings %}
+          {% for listing in active_listings %}
+          <a class="listing-row" href="{{ url_for('search.listing_detail', listing_id=listing.listing_id) }}">
+            <div class="listing-cover" style="background:var(--purple-light)">📚</div>
+            <div class="listing-info">
+              <div class="listing-title">{{ listing.title }}</div>
+              <div class="listing-meta">{{ listing.course }} &nbsp;·&nbsp; <span class="pill pill-green">{{ listing.condition }}</span></div>
+            </div>
+          </a>
+          {% endfor %}
+        {% else %}
+          <div class="empty-state">
+            <div class="empty-state-title">No active listings yet</div>
+            <div class="empty-state-text">Post your first textbook to see it here.</div>
+          </div>
+        {% endif %}
+      </div>
 
-                        <div class="form-row">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="remember">
-                                <span>Remember me</span>
-                            </label>
-                            <button class="link-button" type="button" data-toast="Password reset is not connected in this MVP yet.">Forgot password?</button>
-                        </div>
+      <div class="section-label" style="margin-top:24px">Recent listings</div>
+      <div class="hot-scroll">
+        {% for listing in hot_listings %}
+        <a class="hot-card" href="{{ url_for('search.listing_detail', listing_id=listing.listing_id) }}">
+          <div class="hot-cover" style="background:var(--amber-light)">📖</div>
+          <div class="hot-title">{{ listing.title }}</div>
+          <div class="hot-course">{{ listing.course }}</div>
+        </a>
+        {% endfor %}
+      </div>
+    </main>
 
-                        <button type="submit" class="btn btn-primary btn-full">Sign In</button>
-                    </form>
-                    <p class="panel-note">For seeded users, login also supports the plain-text passwords already in the teammate seed file.</p>
-                </section>
-
-                <section class="panel" id="panel-signup" role="tabpanel" aria-labelledby="tab-signup">
-                    <div class="panel-intro">
-                        <p class="kicker">Future Account Flow</p>
-                        <h2>Join OpenShelf.</h2>
-                        <p>This signup now creates a real account in the shared `users` table without changing the schema.</p>
-                    </div>
-                    <form class="form" id="signupForm" novalidate>
-                        <div class="field-grid">
-                            <label class="field">
-                                <span>First name</span>
-                                <div class="input-wrap">
-                                    <input type="text" id="su-fname" placeholder="Jane" autocomplete="given-name">
-                                </div>
-                                <span class="field-error" id="su-fname-err"></span>
-                            </label>
-                            <label class="field">
-                                <span>Last name</span>
-                                <div class="input-wrap">
-                                    <input type="text" id="su-lname" placeholder="Smith" autocomplete="family-name">
-                                </div>
-                                <span class="field-error" id="su-lname-err"></span>
-                            </label>
-                        </div>
-
-                        <label class="field">
-                            <span>Email address</span>
-                            <div class="input-wrap">
-                                <input type="email" id="su-email" placeholder="you@university.edu" autocomplete="email">
-                            </div>
-                            <span class="field-error" id="su-email-err"></span>
-                        </label>
-
-                        <label class="field">
-                            <span>Password</span>
-                            <div class="input-wrap">
-                                <input type="password" id="su-pw" placeholder="Min. 8 characters" autocomplete="new-password">
-                                <button type="button" class="pw-toggle" data-target="su-pw" aria-label="Toggle password visibility">Show</button>
-                            </div>
-                            <span class="field-error" id="su-pw-err"></span>
-                        </label>
-
-                        <label class="field">
-                            <span>Confirm password</span>
-                            <div class="input-wrap">
-                                <input type="password" id="su-confirm" placeholder="Re-enter password" autocomplete="new-password">
-                            </div>
-                            <span class="field-error" id="su-confirm-err"></span>
-                        </label>
-
-                        <label class="checkbox-label terms-label">
-                            <input type="checkbox" id="terms">
-                            <span>I agree to the prototype terms for this class MVP.</span>
-                        </label>
-                        <span class="field-error" id="terms-err"></span>
-
-                        <button type="submit" class="btn btn-primary btn-full">Create My Account</button>
-                    </form>
-                    <p class="panel-note">New accounts are stored with hashed passwords and logged in immediately after signup.</p>
-                </section>
-            </section>
-        </main>
+    <nav class="botnav">
+      <a href="{{ url_for('index') }}" class="nav-btn active">Home <div class="nav-dot"></div></a>
+      <a href="{{ url_for('search.search_page') }}" class="nav-btn">Search <div class="nav-dot"></div></a>
+      <a href="{{ url_for('listings.profile_page') }}" class="nav-btn">Saved <div class="nav-dot"></div></a>
+      <a href="{{ url_for('upload.upload_page') }}" class="nav-btn">Upload <div class="nav-dot"></div></a>
+    </nav>
+  </div>
+  {% else %}
+  <div class="auth-shell">
+    <div class="auth-hero">
+      <div class="auth-logo">open<span>shelf</span></div>
+      <p class="auth-tagline">Buy and sell textbooks with students near you</p>
+      <div class="auth-bubbles">
+        <div class="bubble b1">📚</div>
+        <div class="bubble b2">💸</div>
+        <div class="bubble b3">🎓</div>
+        <div class="bubble b4">📖</div>
+        <div class="bubble b5">✏️</div>
+      </div>
     </div>
 
-    <script src="{{ url_for('static', filename='app.js') }}"></script>
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-signin" onclick="switchTab('signin')">Sign in</button>
+        <button class="auth-tab" id="tab-signup" onclick="switchTab('signup')">Create account</button>
+      </div>
+
+      <form id="form-signin" class="auth-form" onsubmit="handleSignIn(event)">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" id="signin-email" type="email" placeholder="you@yale.edu" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="input-wrap">
+            <input class="form-input" type="password" id="signin-pw" placeholder="••••••••" required>
+            <button type="button" class="pw-toggle" onclick="togglePw('signin-pw', this)">Show</button>
+          </div>
+        </div>
+        <div class="auth-forgot"><a href="{{ url_for('search.search_page') }}">Continue browsing as guest</a></div>
+        <button type="submit" class="btn btn-primary btn-full auth-submit">Sign in</button>
+      </form>
+
+      <form id="form-signup" class="auth-form hidden" onsubmit="handleSignUp(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">First name</label>
+            <input class="form-input" id="signup-first" type="text" placeholder="Ayushi" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last name</label>
+            <input class="form-input" id="signup-last" type="text" placeholder="Das" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">School email</label>
+          <input class="form-input" id="signup-email" type="email" placeholder="you@yale.edu" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="input-wrap">
+            <input class="form-input" type="password" id="signup-pw" placeholder="At least 8 characters" required>
+            <button type="button" class="pw-toggle" onclick="togglePw('signup-pw', this)">Show</button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full auth-submit">Create account</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(tab) {
+      document.getElementById('tab-signin').classList.toggle('active', tab === 'signin');
+      document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+      document.getElementById('form-signin').classList.toggle('hidden', tab !== 'signin');
+      document.getElementById('form-signup').classList.toggle('hidden', tab !== 'signup');
+    }
+
+    function togglePw(id, btn) {
+      const input = document.getElementById(id);
+      const showing = input.type === 'text';
+      input.type = showing ? 'password' : 'text';
+      btn.textContent = showing ? 'Show' : 'Hide';
+    }
+
+    async function sendJson(url, payload) {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Request failed.');
+      return data;
+    }
+
+    async function handleSignIn(event) {
+      event.preventDefault();
+      try {
+        const data = await sendJson('{{ url_for('auth.login') }}', {
+          email: document.getElementById('signin-email').value,
+          password: document.getElementById('signin-pw').value
+        });
+        window.location.href = data.redirect_url || '{{ url_for('search.search_page') }}';
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    async function handleSignUp(event) {
+      event.preventDefault();
+      try {
+        const data = await sendJson('{{ url_for('auth.signup') }}', {
+          first_name: document.getElementById('signup-first').value,
+          last_name: document.getElementById('signup-last').value,
+          email: document.getElementById('signup-email').value,
+          password: document.getElementById('signup-pw').value
+        });
+        window.location.href = data.redirect_url || '{{ url_for('search.search_page') }}';
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+  </script>
+  {% endif %}
 </body>
 </html>

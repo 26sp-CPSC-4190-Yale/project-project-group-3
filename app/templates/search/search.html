@@ -1,37 +1,88 @@
-{% extends "layout.html" %}
-{% block content %}
-<section class="page-heading">
-    <div>
-        <p class="section-kicker">Search Marketplace</p>
-        <h1>Find a textbook that matches your course.</h1>
-    </div>
-    <p>Search by ISBN, title, author, or course code across the shared listing database.</p>
-</section>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenShelf — Search</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='frontend/styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='frontend/search.css') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <nav class="topnav">
+      <span class="topnav-brand">open<span>shelf</span></span>
+      <div class="topnav-right">
+        {% if current_user.id %}
+        <div class="avatar-circle">{{ (current_user.username or 'OS')[:2]|upper }}</div>
+        {% else %}
+        <a class="btn btn-secondary" href="{{ url_for('index') }}">Sign in</a>
+        {% endif %}
+      </div>
+    </nav>
 
-<section class="search-controls">
-    <form action="{{ url_for('search.search_results') }}" method="get" class="search-form">
-        <div class="input-shell">
-            <select name="field">
-                <option value="all">All fields</option>
-                <option value="title">Title</option>
-                <option value="isbn">ISBN</option>
-                <option value="author">Author</option>
-                <option value="course">Course</option>
-            </select>
+    <main class="page-content">
+      <div class="search-header">
+        <h1 class="search-title">Find textbooks</h1>
+        <p class="search-sub">Search by title, author, ISBN, or course code</p>
+      </div>
+
+      <form action="{{ url_for('search.search_results') }}" method="get">
+        <input type="hidden" name="field" id="field-input" value="all">
+        <div class="search-bar-wrap">
+          <span class="search-icon">🔍</span>
+          <input
+            class="search-bar"
+            id="search-input"
+            name="q"
+            type="text"
+            placeholder="e.g. Organic Chemistry or CHEM 220"
+            required
+          />
+          <button class="search-clear hidden" id="clear-btn" type="button" onclick="clearSearch()">✕</button>
         </div>
 
-        <div class="input-shell">
-            <input
-                type="text"
-                name="q"
-                placeholder="e.g. Data Structures, CPSC 2230, 499064203-1"
-                required
-            />
+        <div class="tag-row" id="tag-row">
+          <button class="tag active-tag" type="button" onclick="quickSearch(this,'')">All</button>
+          <button class="tag" type="button" onclick="quickSearch(this,'CPSC')">CPSC</button>
+          <button class="tag" type="button" onclick="quickSearch(this,'MATH')">MATH</button>
+          <button class="tag" type="button" onclick="quickSearch(this,'CHEM')">CHEM</button>
+          <button class="tag" type="button" onclick="quickSearch(this,'ECON')">ECON</button>
+          <button class="tag" type="button" onclick="quickSearch(this,'PHYS')">PHYS</button>
+          <button class="tag" type="button" onclick="quickSearch(this,'ENGL')">ENGL</button>
         </div>
 
-        <button type="submit" class="btn btn-primary">Search</button>
-    </form>
+        <button class="btn btn-primary btn-full" type="submit">Search listings</button>
+      </form>
+    </main>
 
-    <p class="helper-text">Tip: if the landing page is the new front door, this route stays your actual inventory browser.</p>
-</section>
-{% endblock %}
+    <nav class="botnav">
+      <a href="{{ url_for('index') }}" class="nav-btn">Home <div class="nav-dot"></div></a>
+      <a href="{{ url_for('search.search_page') }}" class="nav-btn active">Search <div class="nav-dot"></div></a>
+      <a href="{{ url_for('listings.profile_page') }}" class="nav-btn">Saved <div class="nav-dot"></div></a>
+      <a href="{{ url_for('upload.upload_page') }}" class="nav-btn">Upload <div class="nav-dot"></div></a>
+    </nav>
+  </div>
+
+  <script>
+    function clearSearch() {
+      const input = document.getElementById('search-input');
+      input.value = '';
+      input.focus();
+      document.getElementById('clear-btn').classList.add('hidden');
+    }
+
+    function quickSearch(el, tag) {
+      document.querySelectorAll('.tag').forEach((chip) => chip.classList.remove('active-tag'));
+      el.classList.add('active-tag');
+      const input = document.getElementById('search-input');
+      input.value = tag;
+      document.getElementById('clear-btn').classList.toggle('hidden', tag.length === 0);
+      if (tag) input.form.submit();
+    }
+
+    document.getElementById('search-input').addEventListener('input', (event) => {
+      document.getElementById('clear-btn').classList.toggle('hidden', event.target.value.length === 0);
+    });
+  </script>
+</body>
+</html>

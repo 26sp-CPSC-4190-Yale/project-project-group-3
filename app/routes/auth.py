@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request, session, url_for
+from flask import Blueprint, jsonify, redirect, request, session, url_for
 from sqlalchemy import text
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -162,4 +162,6 @@ def login():
 @auth_bp.route("/logout", methods=["POST"])
 def logout():
     session.clear()
+    if request.args.get("redirect") == "1":
+        return redirect(url_for("index"))
     return jsonify({"message": "Signed out successfully.", "redirect_url": url_for("index")})
