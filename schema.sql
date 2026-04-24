@@ -1,9 +1,17 @@
+DROP TABLE IF EXISTS messages CASCADE;
+DROP TABLE IF EXISTS conversation_members CASCADE;
+DROP TABLE IF EXISTS rooms CASCADE;
+DROP TABLE IF EXISTS saved_listings CASCADE;
+DROP TABLE IF EXISTS listings CASCADE;
+DROP TABLE IF EXISTS books CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+
 -- users
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
-    username TEXT NOT NULL,
-    password TEXT NOT NULL, -- encrypted
-    email TEXT NOT NULL
+    username TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL, 
+    email TEXT NOT NULL UNIQUE
 );
 
 -- books
@@ -31,11 +39,12 @@ CREATE TABLE listings (
 CREATE TABLE saved_listings (
     user_id INTEGER NOT NULL,
     listing_id INTEGER NOT NULL,
+    UNIQUE (user_id, listing_id), -- Prevents double saving
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (listing_id) REFERENCES listings(id) ON DELETE CASCADE
 );
 
--- chat rooms (conversations)
+-- chat rooms
 CREATE TABLE rooms (
     id SERIAL PRIMARY KEY,
     listing_id INTEGER NOT NULL,
@@ -45,7 +54,7 @@ CREATE TABLE rooms (
     FOREIGN KEY (listing_id) REFERENCES listings(id) ON DELETE CASCADE
 );
 
--- conversation members (stores participants of conversations)
+-- conversation members
 CREATE TABLE conversation_members (
     room_id INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
@@ -53,12 +62,13 @@ CREATE TABLE conversation_members (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- messages, stores each message and the context where it was sent
+-- messages
 CREATE TABLE messages (
     id SERIAL PRIMARY KEY,
     room_id INTEGER NOT NULL,
     sender_id INTEGER NOT NULL,
     content TEXT NOT NULL,
+    is_read BOOLEAN NOT NULL DEFAULT FALSE, 
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (room_id) REFERENCES rooms(id) ON DELETE CASCADE,
     FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE

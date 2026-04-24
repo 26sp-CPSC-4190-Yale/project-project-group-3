@@ -3,7 +3,7 @@ Listings Flask blueprintfor user profile and listing management
 It handles rendering teh user's profile dashboaard (which displays saved & posted listings)
 and provides endpoints for saving, unsaving, and deleting listings
 """
-from flask import Blueprint, render_template, session, redirect, url_for, request, flash
+from flask import Blueprint, render_template, session, redirect, url_for, request, flash, jsonify
 from app import db
 from sqlalchemy import text
 
@@ -25,32 +25,47 @@ def profile_page():
         flash("You must be logged in to view this page.")
         return redirect(url_for("index"))
     
-    # --- FETCH SAVED LISTINGS ---
+    # --- FETCH SAVED LISTINGS + UNREAD BUYER MESSAGES ---
     saved_query = text("""
-        SELECT b.isbn, b.title, b.author, l.course, l.condition, l.id as listing_id 
-        FROM users u 
-        INNER JOIN saved_listings s ON u.id = s.user_id 
-        INNER JOIN listings l ON s.listing_id = l.id 
-        INNER JOIN books b ON l.book_id = b.id 
-        WHERE u.id = :user_id 
+        SELECT b.isbn, b.title, b.author, l.course, l.condition, l.id as listing_id,
+               COALESCE(SUM(CASE WHEN m.is_read = FALSE AND m.sender_id != :user_id THEN 1 ELSE 0 END), 0) AS unread_count
+        FROM saved_listings s 
+        JOIN listings l ON s.listing_id = l.id 
+        JOIN books b ON l.book_id = b.id 
+        LEFT JOIN rooms r ON r.listing_id = l.id AND r.buyer_id = :user_id
+        LEFT JOIN messages m ON m.room_id = r.id
+        WHERE s.user_id = :user_id 
+        GROUP BY b.isbn, b.title, b.author, l.course, l.condition, l.id
         ORDER BY b.title ASC;
     """)
-
     saved_listings = db.session.execute(saved_query, {"user_id": user_id}).mappings().fetchall()
 
-    # --- FETCH POSTED LISTINGS ---
+    # --- FETCH POSTED LISTINGS + UNREAD SELLER MESSAGES ---
     posted_query = text("""
-        SELECT b.isbn, b.title, b.author, l.course, l.condition, l.id as listing_id 
+        SELECT b.isbn, b.title, b.author, l.course, l.condition, l.id as listing_id,
+               COALESCE(SUM(CASE WHEN m.is_read = FALSE AND m.sender_id != :user_id THEN 1 ELSE 0 END), 0) AS unread_count
         FROM listings l 
-        INNER JOIN users u ON l.creator_id = u.id 
-        INNER JOIN books b ON l.book_id = b.id 
-        WHERE u.id = :user_id 
+        JOIN books b ON l.book_id = b.id 
+        LEFT JOIN rooms r ON r.listing_id = l.id
+        LEFT JOIN messages m ON m.room_id = r.id
+        WHERE l.creator_id = :user_id 
+        GROUP BY b.isbn, b.title, b.author, l.course, l.condition, l.id
         ORDER BY b.title ASC;
     """)
-
     posted_listings = db.session.execute(posted_query, {"user_id": user_id}).mappings().fetchall()
 
-    return render_template('profile.html', saved_listings=saved_listings, posted_listings=posted_listings)
+    # Calc totals for the tabs
+    total_saved_unread = sum(l['unread_count'] for l in saved_listings)
+    total_posted_unread = sum(l['unread_count'] for l in posted_listings)
+
+
+    return render_template(
+        'profile.html', 
+        saved_listings=saved_listings, 
+        posted_listings=posted_listings,
+        total_saved_unread=total_saved_unread,
+        total_posted_unread=total_posted_unread
+    )
 
 @listings_bp.route('/save/<int:listing_id>', methods=['POST'])
 def save_listing(listing_id):
@@ -59,29 +74,35 @@ def save_listing(listing_id):
     """
     # Grab logged in user
     user_id = session.get('user_id')
+    is_ajax = request.headers.get("Accept") == 'application/json'
 
-    # Check if the user_id exists.
     if not user_id:
+        if is_ajax:
+            return jsonify({"error": "Login required"}), 401
         flash("Please login to save listings.")
         return redirect(url_for("index"))
-    
-    insert_query = text("""
-        INSERT INTO saved_listings (user_id, listing_id) 
-        VALUES (:user_id, :listing_id);
-    """)
 
     try:
-        db.session.execute(insert_query, {"user_id": user_id, "listing_id": listing_id})
-
+        db.session.execute(
+            text("""
+                INSERT INTO saved_listings (user_id, listing_id)
+                VALUES (:user_id, :listing_id)
+            """),
+            {"user_id": user_id, "listing_id": listing_id}
+        )
         db.session.commit()
-
-        flash("Listing saved successfully!")
     except Exception as exc:
         db.session.rollback()
+        if is_ajax:
+            return jsonify({"error": str(exc)}), 500
+        flash("Could not save listing.")
+        return redirect(request.referrer or url_for('search.listing_detail', listing_id=listing_id))
 
-        flash("Could not save listing. It may already be saved")
-
+    if is_ajax:
+        return jsonify({"success": True})
     return redirect(request.referrer or url_for('search.listing_detail', listing_id=listing_id))
+
+
 
 
 @listings_bp.route('/unsave/<int:listing_id>', methods=["POST"])
@@ -89,23 +110,26 @@ def unsave_listing(listing_id):
     """
     Removes a listing from the user's saved items.
     """
-    # Grab logged in user
     user_id = session.get('user_id')
+    is_ajax = request.headers.get('Accept') == 'application/json'
 
-    # Check if the user_id exists.
     if not user_id:
-        flash("Please login to save listings.")
+        if is_ajax:
+            return jsonify({"error": "Login required"}), 401
+        flash("Please login.")
         return redirect(url_for("index"))
-    
-    unsave_query = text("""
-        DELETE FROM saved_listings 
-        WHERE listing_id = :listing_id AND user_id = :user_id;
-    """)
 
-    db.session.execute(unsave_query, {"listing_id":  listing_id, "user_id": user_id})
+    db.session.execute(
+        text("DELETE FROM saved_listings WHERE listing_id = :listing_id AND user_id = :user_id"),
+        {"listing_id": listing_id, "user_id": user_id}
+    )
     db.session.commit()
+
+    if is_ajax:
+        return jsonify({"success": True})
     flash("Listing removed from your saved items.")
     return redirect(request.referrer or url_for('listings.profile_page'))
+
 
 @listings_bp.route('/delete/<int:listing_id>', methods=['POST'])
 def delete_listing(listing_id):
@@ -113,28 +137,63 @@ def delete_listing(listing_id):
     Permanently deletes a listing that the user posted from the database.
     """
     user_id = session.get('user_id')
+    is_ajax = request.headers.get("Accept") == "application/json"
 
     if not user_id:
+        if is_ajax:
+            return jsonify({"error": "Login required"}), 401
         return redirect(url_for("index"))
-    
+
     try:
+        # Verify ownership before deleting anything
+        owner_check = db.session.execute(
+            text("SELECT id FROM listings WHERE id = :lid AND creator_id = :uid"),
+            {"lid": listing_id, "uid": user_id}
+        ).first()
+
+        if not owner_check:
+            if is_ajax:
+                return jsonify({"error": "Not found or unauthorized"}), 403
+            return redirect(url_for("listings.profile_page"))
+
+        # Delete messages in rooms for this listing
         db.session.execute(
-            text("DELETE FROM saved_listings WHERE listing_id = :listing_id"), 
-            {"listing_id": listing_id}
+            text("""
+                DELETE FROM messages 
+                WHERE room_id IN (
+                    SELECT id FROM rooms WHERE listing_id = :lid
+                )
+            """),
+            {"lid": listing_id}
         )
 
-        delete_query = text("""
-            DELETE FROM listings 
-            WHERE id = :listing_id AND creator_id = :user_id;
-        """)
-        result = db.session.execute(delete_query, {"listing_id": listing_id, "user_id": user_id})
-        
+        # Delete the rooms themselves
+        db.session.execute(
+            text("DELETE FROM rooms WHERE listing_id = :lid"),
+            {"lid": listing_id}
+        )
+
+        # Delete saved references
+        db.session.execute(
+            text("DELETE FROM saved_listings WHERE listing_id = :lid"),
+            {"lid": listing_id}
+        )
+
+        # Finally delete the listing
+        db.session.execute(
+            text("DELETE FROM listings WHERE id = :lid AND creator_id = :uid"),
+            {"lid": listing_id, "uid": user_id}
+        )
+
         db.session.commit()
-        
-        print(f"SUCCESS: Deleted {result.rowcount} listing(s) from the database.")
 
     except Exception as e:
         db.session.rollback()
         print(f"DATABASE ERROR during deletion: {str(e)}")
+        if is_ajax:
+            return jsonify({"error": "Deletion failed"}), 500
+        return redirect(request.referrer or url_for("listings.profile_page"))
 
+    if is_ajax:
+        return jsonify({"success": True})
     return redirect(url_for("listings.profile_page"))

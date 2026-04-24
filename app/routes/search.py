@@ -25,76 +25,65 @@ def search_page():
 
 """
 Reads query parameters from the URL
-URL: GET /search/results?q=<search_terms>&field=<field_name>
+URL: GET /api/search?q=<search_terms>&condition=<conditions_list>&course_code=<course_codes_list>&sort=<sort_filter>
 Query params:
     q - the search term (e.g., "calculus", "CPSC 2230")
     field - which column to search: "all", "title", "isbn", "author", "course"
 """
-@search_bp.route("/search/results")
-def search_results():
-    # read the query params
-    q = request.args.get("q", "").strip()
-    field = request.args.get("field", "all")
-
-    # guard empty searches
-    if not q:
-        return render_template("search/results.html", listings=[], query=q)
-    
-    # query builder
-    like = f"%{q}%"
-
+@search_bp.route("/api/search")
+def search():
     base_query = """
-        SELECT  l.id AS listing_id,
-                l.course,
-                l.condition,
-                b.isbn,
-                b.title,
-                b.author,
-                b.publisher,
-                b.edition,
+        SELECT l.id AS listing_id, l.course, l.condition, l.creator_id,
+                b.isbn, b.title, b.author, b.publisher, b.edition,
                 u.username AS posted_by
-        FROM listings l
-        JOIN books b ON l.book_id = b.id
+        FROM listings l 
+        JOIN books b oN l.book_id=b.id
         JOIN users u ON l.creator_id = u.id
     """
 
-    if field == "isbn":
-        where = "WHERE b.isbn ILIKE :q" 
-    elif field == "title":
-        where = "WHERE b.title ILIKE :q"
-    elif field == "author":
-        where = "WHERE b.author ILIKE :q"
-    elif field == "course":
-        where = "WHERE l.course ILIKE :q"
-    else:
-        where = """
-            WHERE b.isbn ILIKE :q
-            OR b.title ILIKE :q
-            OR b.author ILIKE :q
-            OR l.course ILIKE :q
-        """
+    where_clauses = []
+    params = {}
 
-    order = "ORDER BY l.id DESC"
+    # Text Search
+    q = request.args.get("q", "").strip()
+    if q:
+        where_clauses.append("(b.isbn ILIKE :q OR b.title ILIKE :q OR b.author ILIKE :q OR l.course ILIKE :q)")
+        params["q"] = f"%{q}%"
 
-    full_query = text(f"{base_query} {where} {order}")
+    # Condition Filters
+    conditions = request.args.getlist("condition")
+    if conditions:
+        clean_conditions = tuple(c.lower() for c in conditions)
+        where_clauses.append("LOWER(l.condition) IN :conditions")
+        params["conditions"] = clean_conditions
 
-    result = db.session.execute(full_query, {"q": like})
-    listings = result.mappings().all()
+    # Course Code Filters
+    course_codes = request.args.getlist("course_code")
+    if course_codes:
+        code_clauses = []
+        for i, code in enumerate(course_codes):
+            param_key = f"code_{i}"
+            code_clauses.append(f"l.course ILIKE :{param_key}")
+            params[param_key] = f"{code}%"
+        where_clauses.append(f"({' OR '.join(code_clauses)})")
+
+    where_sql = "WHERE " + " AND ".join(where_clauses) if where_clauses else ""
+
+    # Sorting
+    sort_by = request.args.get("sort")
+    order_sql = "ORDER BY b.title ASC" if sort_by == "az" else "ORDER BY l.id DESC"
+
+    # Execute
+    full_query = text(f"{base_query} {where_sql} {order_sql}")
+    listings = db.session.execute(full_query, params).mappings().all()
 
     saved_ids = []
     if session.get('user_id'):
         saved_query = text("SELECT listing_id FROM saved_listings WHERE user_id = :user_id")
-        result = db.session.execute(saved_query, {"user_id": session.get('user_id')}).fetchall()
+        result = db.session.execute(saved_query, {"user_id": session.get('user_id')}).mappings().all()
+        saved_ids = [row["listing_id"] for row in result]
 
-        # Extract the IDs
-        saved_ids = [row[0] for row in result]
-
-    return render_template(
-        "search/results.html",
-        listings=listings,
-        query=q,
-        saved_ids=saved_ids,
-    )
+    return render_template("search/partials/listing_items.html", listings=listings, saved_ids=saved_ids)
 
 """
 Route: Signle listing detail
@@ -107,7 +96,8 @@ def listing_detail(listing_id):
 
     # query for one listing by primary key
     query = text("""
-        SELECT l.id       AS listing_id,
+        SELECT l.id AS listing_id,
+                    l.creator_id,
                     l.course,
                     l.condition,
                     b.isbn,
@@ -129,4 +119,41 @@ def listing_detail(listing_id):
     if listing is None:
         abort(404)
 
-    return render_template("search/detail.html", listing=listing)
+    user_id = session.get('user_id')
+    chat_rooms = []
+    buyer_unread_count = 0
+
+    if user_id:
+        # SELLER VIEW: Fetch all buyers and count unread messages from each
+        if user_id == listing['creator_id']:
+            chat_rooms = db.session.execute(
+                text("""
+                    SELECT r.id as room_id, u.username as buyer_name, u.id as buyer_id,
+                           COALESCE(SUM(CASE WHEN m.is_read = FALSE AND m.sender_id = u.id THEN 1 ELSE 0 END), 0) AS unread_count
+                    FROM rooms r
+                    JOIN users u ON r.buyer_id=u.id
+                    LEFT JOIN messages m ON m.room_id = r.id
+                    WHERE r.listing_id=:lid
+                    GROUP BY r.id, u.username, u.id
+                """),
+                {"lid": listing_id}
+            ).mappings().all()
+            
+        # BUYER VIEW: Count unread messages from the seller to this specific buyer
+        else:
+            buyer_unread_count = db.session.execute(
+                text("""
+                    SELECT COALESCE(SUM(CASE WHEN m.is_read = FALSE AND m.sender_id = :seller_id THEN 1 ELSE 0 END), 0)
+                    FROM rooms r
+                    JOIN messages m ON m.room_id = r.id
+                    WHERE r.listing_id = :lid AND r.buyer_id = :buyer_id
+                """),
+                {"lid": listing_id, "buyer_id": user_id, "seller_id": listing['creator_id']}
+            ).scalar() or 0
+
+    return render_template(
+        "search/detail.html", 
+        listing=listing, 
+        chat_rooms=chat_rooms, 
+        buyer_unread_count=buyer_unread_count
+    )

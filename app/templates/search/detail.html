@@ -1,61 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OpenShelf — {{ listing.title }}</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='frontend/styles.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='frontend/search.css') }}">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>OpenShelf — {{ listing.title }}</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='frontend/styles.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='frontend/search.css') }}">
 </head>
 <body>
-  <div class="app-shell">
-    <nav class="topnav">
-      <span class="topnav-brand">open<span>shelf</span></span>
-      <div class="topnav-right">
-        {% if current_user.id %}
-        <div class="avatar-circle">{{ (current_user.username or 'OS')[:2]|upper }}</div>
-        {% else %}
-        <a class="btn btn-secondary" href="{{ url_for('index') }}">Sign in</a>
-        {% endif %}
-      </div>
-    </nav>
+	<div class="app-shell">
+		<nav class="topnav">
+			<span class="topnav-brand">open<span>shelf</span></span>
+			<div class="topnav-right">
+				{% if current_user.id %}
+				<div class="avatar-circle">{{ (current_user.username or 'OS')[:2]|upper }}</div>
+				{% else %}
+				<a class="btn btn-secondary" href="{{ url_for('index') }}">Sign in</a>
+				{% endif %}
+			</div>
+		</nav>
 
-    <main class="page-content">
-      <div class="result-card" style="align-items:flex-start">
-        <div class="result-cover" style="background:var(--purple-light); width:86px; height:112px">📚</div>
-        <div class="result-info">
-          <div class="result-title">{{ listing.title }}</div>
-          <div class="result-author">{{ listing.author }}</div>
-          <div class="result-tags">
-            <span class="pill pill-purple">{{ listing.course }}</span>
-            <span class="pill pill-green">{{ listing.condition }}</span>
-          </div>
-          <div class="result-seller">Listed by {{ listing.posted_by }}</div>
-        </div>
-      </div>
+		<main class="page-content">
+			<div class="result-card" style="align-items:flex-start">
+				<div class="result-cover" style="background:var(--purple-light); width:86px; height:112px">📚</div>
+				<div class="result-info">
+					<div class="result-title">{{ listing.title }}</div>
+					<div class="result-author">{{ listing.author }}</div>
+					<div class="result-tags">
+						<span class="pill pill-purple">{{ listing.course }}</span>
+						<span class="pill pill-green">{{ listing.condition|title }}</span>
+					</div>
+					<div class="result-seller">Listed by {{ listing.posted_by }}</div>
+				</div>
+			</div>
 
-      <div class="section-label" style="margin-top:24px">Book details</div>
-      <div class="result-list">
-        <div class="card"><strong>ISBN</strong><br>{{ listing.isbn }}</div>
-        <div class="card"><strong>Publisher</strong><br>{{ listing.publisher }}</div>
-        <div class="card"><strong>Edition</strong><br>{{ listing.edition }}</div>
-      </div>
+			<div class="section-label" style="margin-top:24px">Book details</div>
+			<div class="result-list">
+				<div class="card"><strong>ISBN</strong><br>{{ listing.isbn }}</div>
+				<div class="card"><strong>Publisher</strong><br>{{ listing.publisher }}</div>
+				<div class="card"><strong>Edition</strong><br>{{ listing.edition }}</div>
+			</div>
 
-      <div class="sort-row">
-        <a class="btn btn-secondary" href="{{ url_for('search.search_page') }}">Back to search</a>
-        {% if current_user.id %}
-        <a class="btn btn-primary" href="{{ url_for('chat.chat_room', listing_id=listing.listing_id) }}">Chat</a>
-        {% endif %}
-        <a class="btn btn-outline" href="{{ url_for('upload.upload_page') }}">Post similar</a>
-      </div>
-    </main>
+			<div class="sort-row">
+				<a class="btn btn-secondary" href="{{ url_for('search.search_page') }}">Back to search</a>
+				
+				{% if current_user.id %}
+                    {% if current_user.id != listing.creator_id %}
+                        <a id="buyer-msg-btn" class="btn btn-primary btn-with-badge" href="{{ url_for('chat.chat_room', listing_id=listing.listing_id) }}">
+                            Message Seller
+                            {% if buyer_unread_count > 0 %}
+                                <span class="badge-count badge-card">{{ buyer_unread_count }}</span>
+                            {% endif %}
+                        </a>
+                    {% endif %}
+				{% endif %}
+				
+				<a class="btn btn-outline" href="{{ url_for('upload.upload_page') }}">Post similar</a>
+			</div>
 
-    <nav class="botnav">
-      <a href="{{ url_for('index') }}" class="nav-btn">Home <div class="nav-dot"></div></a>
-      <a href="{{ url_for('search.search_page') }}" class="nav-btn active">Search <div class="nav-dot"></div></a>
-      <a href="{{ url_for('listings.profile_page') }}" class="nav-btn">Saved <div class="nav-dot"></div></a>
-      <a href="{{ url_for('upload.upload_page') }}" class="nav-btn">Upload <div class="nav-dot"></div></a>
-    </nav>
-  </div>
+            {% if current_user.id == listing.creator_id %}
+			<div class="section-label" style="margin-top:24px">Active Inquiries</div>
+			<div class="result-list">
+					{% if chat_rooms %}
+							{% for room in chat_rooms %}
+							<div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+									<div><strong style="color:var(--purple);">{{ room.buyer_name }}</strong> is interested in this book</div>
+                                    
+                                    <a class="btn btn-primary btn-with-badge seller-chat-btn" data-buyer-id="{{ room.buyer_id }}" style="font-size: 12px; padding: 6px 12px;" href="{{ url_for('chat.chat_room', listing_id=listing.listing_id, buyer_id=room.buyer_id) }}">
+                                        Open Chat
+                                        {% if room.unread_count > 0 %}
+                                            <span class="badge-count badge-card">{{ room.unread_count }}</span>
+                                        {% endif %}
+                                    </a>
+
+							</div>
+							{% endfor %}
+					{% else %}
+							<div class="empty-state-text" style="text-align: center; margin-top: 10px;">
+									No one has messaged you about this listing yet.
+							</div>
+					{% endif %}
+			</div>
+			{% endif %}
+		</main>
+
+		<nav class="botnav">
+			<a href="{{ url_for('index') }}" class="nav-btn">Home <div class="nav-dot"></div></a>
+			<a href="{{ url_for('search.search_page') }}" class="nav-btn">Search <div class="nav-dot"></div></a>
+			<a href="{{ url_for('listings.profile_page') }}" class="nav-btn active" style="position: relative;">
+				Shelf 
+				{% if unread_count > 0 %}
+					<span class="badge-count" style="top: -2px; right: 10px;">{{ unread_count }}</span>
+				{% endif %}
+				<div class="nav-dot"></div>
+			</a>
+			<a href="{{ url_for('upload.upload_page') }}" class="nav-btn">Upload <div class="nav-dot"></div></a>
+		</nav>
+	</div>
+
+	<script src="{{ url_for('static', filename='frontend/global.js') }}"></script>
+
+	<script>
+		const LISTING_ID = {{ listing.listing_id }};
+		
+		async function checkListingUnread() {
+			try {
+				const res = await fetch(`/api/listing/${LISTING_ID}/unread`);
+				if (!res.ok) return;
+				const data = await res.json();
+				
+				if (data.role === 'buyer') {
+					const btn = document.getElementById('buyer-msg-btn');
+					if (btn) updateBadge(btn, data.unread_count);
+				} else if (data.role === 'seller') {
+					const buttons = document.querySelectorAll('.seller-chat-btn');
+					buttons.forEach(btn => {
+						const buyerId = btn.getAttribute('data-buyer-id');
+						if (buyerId && data.buyers[buyerId] !== undefined) {
+							updateBadge(btn, data.buyers[buyerId]);
+						}
+					});
+				}
+			} catch (e) {
+				console.error("Listing sync failed", e);
+			}
+		}
+		
+		function updateBadge(btn, count) {
+			let badge = btn.querySelector('.badge-count');
+			if (count > 0) {
+				if (!badge) {
+					badge = document.createElement('span');
+					badge.className = 'badge-count badge-card';
+					btn.appendChild(badge);
+				}
+				badge.textContent = count;
+			} else if (badge) {
+				badge.remove();
+			}
+		}
+		
+		setInterval(checkListingUnread, 3000);
+	</script>
 </body>
 </html>

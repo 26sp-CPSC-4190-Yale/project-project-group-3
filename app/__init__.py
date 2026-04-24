@@ -16,14 +16,38 @@ def create_app():
     socketio.init_app(app)
 
     @app.context_processor
-    def inject_auth_state():
-        return {
+    def inject_global_state():
+        from flask import request as current_request
+        state = {
             "current_user": {
                 "id": session.get("user_id"),
                 "email": session.get("user_email"),
                 "username": session.get("username"),
-            }
+            },
+            "unread_count": 0
         }
+
+        if current_request.path.startswith("/api/") or current_request.path.startswith("/static/"):
+            return state
+
+        user_id = session.get("user_id")
+        if user_id:
+            try:
+                unread = db.session.execute(text("""
+                    SELECT COUNT(m.id)
+                    FROM messages m
+                    JOIN rooms r ON m.room_id = r.id
+                    JOIN listings l ON r.listing_id = l.id
+                    WHERE m.is_read = FALSE
+                    AND m.sender_id != :uid
+                    AND (r.buyer_id = :uid OR l.creator_id = :uid)
+                """), {"uid": user_id}).scalar_one()
+                state["unread_count"] = unread
+            except Exception:
+                pass
+
+        return state
+
 
     from app.routes.search import search_bp
     from app.routes.upload import upload_bp

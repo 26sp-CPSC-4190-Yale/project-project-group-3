@@ -68,7 +68,7 @@
             <div class="listing-cover" style="background:var(--purple-light)">📚</div>
             <div class="listing-info">
               <div class="listing-title">{{ listing.title }}</div>
-              <div class="listing-meta">{{ listing.course }} &nbsp;·&nbsp; <span class="pill pill-green">{{ listing.condition }}</span></div>
+              <div class="listing-meta">{{ listing.course }} &nbsp;·&nbsp; <span class="pill pill-green">{{ listing.condition|title }}</span></div>
             </div>
           </a>
           {% endfor %}
@@ -95,7 +95,7 @@
     <nav class="botnav">
       <a href="{{ url_for('index') }}" class="nav-btn active">Home <div class="nav-dot"></div></a>
       <a href="{{ url_for('search.search_page') }}" class="nav-btn">Search <div class="nav-dot"></div></a>
-      <a href="{{ url_for('listings.profile_page') }}" class="nav-btn">Saved <div class="nav-dot"></div></a>
+      <a href="{{ url_for('listings.profile_page') }}" class="nav-btn">Shelf <div class="nav-dot"></div></a>
       <a href="{{ url_for('upload.upload_page') }}" class="nav-btn">Upload <div class="nav-dot"></div></a>
     </nav>
   </div>
@@ -217,5 +217,6 @@
     }
   </script>
   {% endif %}
+  <script src="{{ url_for('static', filename='frontend/global.js') }}"></script>
 </body>
 </html>
