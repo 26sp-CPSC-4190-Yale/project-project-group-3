@@ -133,6 +133,26 @@ input, textarea, select { font-family: var(--font); }
   color: var(--gray-400);
   transition: color 0.15s;
   text-decoration: none;
+  position: relative;
+}
+
+.nav-badge {
+  position: absolute;
+  top: 4px;
+  right: 50%;
+  transform: translateX(16px);
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: var(--radius-full);
+  background: var(--coral);
+  color: var(--white);
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
  
 .nav-btn:hover { color: var(--purple); }

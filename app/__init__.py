@@ -25,6 +25,31 @@ def create_app():
             }
         }
 
+    @app.context_processor
+    def inject_unread_count():
+        user_id = session.get("user_id")
+        if not user_id:
+            return {"unread_count": 0}
+        try:
+            count = db.session.execute(
+                text(
+                    """
+                    SELECT COUNT(*)
+                    FROM messages m
+                    JOIN conversation_members cm
+                      ON cm.conversation_id = m.conversation_id
+                     AND cm.user_id = :uid
+                    WHERE m.sender_id != :uid
+                      AND (cm.last_read_at IS NULL OR m.created_at > cm.last_read_at)
+                    """
+                ),
+                {"uid": user_id},
+            ).scalar() or 0
+        except SQLAlchemyError:
+            db.session.rollback()
+            count = 0
+        return {"unread_count": count}
+
     from app.routes.search import search_bp
     from app.routes.upload import upload_bp
     from app.routes.auth import auth_bp

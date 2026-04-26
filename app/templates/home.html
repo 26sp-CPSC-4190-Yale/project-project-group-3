@@ -95,6 +95,7 @@
     <nav class="botnav">
       <a href="{{ url_for('index') }}" class="nav-btn active">Home <div class="nav-dot"></div></a>
       <a href="{{ url_for('search.search_page') }}" class="nav-btn">Search <div class="nav-dot"></div></a>
+      <a href="{{ url_for('chat.chat_list') }}" class="nav-btn">Chats <div class="nav-dot"></div>{% if unread_count > 0 %}<span class="nav-badge">{{ unread_count }}</span>{% endif %}</a>
       <a href="{{ url_for('listings.profile_page') }}" class="nav-btn">Saved <div class="nav-dot"></div></a>
       <a href="{{ url_for('upload.upload_page') }}" class="nav-btn">Upload <div class="nav-dot"></div></a>
     </nav>

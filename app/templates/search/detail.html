@@ -43,8 +43,8 @@
 
       <div class="sort-row">
         <a class="btn btn-secondary" href="{{ url_for('search.search_page') }}">Back to search</a>
-        {% if current_user.id %}
-        <a class="btn btn-primary" href="{{ url_for('chat.chat_room', listing_id=listing.listing_id) }}">Chat</a>
+        {% if current_user.id and current_user.id != listing.creator_id %}
+        <a class="btn btn-primary" href="{{ url_for('chat.chat_start', listing_id=listing.listing_id) }}">Chat seller</a>
         {% endif %}
         <a class="btn btn-outline" href="{{ url_for('upload.upload_page') }}">Post similar</a>
       </div>
@@ -53,6 +53,7 @@
     <nav class="botnav">
       <a href="{{ url_for('index') }}" class="nav-btn">Home <div class="nav-dot"></div></a>
       <a href="{{ url_for('search.search_page') }}" class="nav-btn active">Search <div class="nav-dot"></div></a>
+      <a href="{{ url_for('chat.chat_list') }}" class="nav-btn">Chats <div class="nav-dot"></div>{% if unread_count > 0 %}<span class="nav-badge">{{ unread_count }}</span>{% endif %}</a>
       <a href="{{ url_for('listings.profile_page') }}" class="nav-btn">Saved <div class="nav-dot"></div></a>
       <a href="{{ url_for('upload.upload_page') }}" class="nav-btn">Upload <div class="nav-dot"></div></a>
     </nav>

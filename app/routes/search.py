@@ -108,6 +108,7 @@ def listing_detail(listing_id):
     # query for one listing by primary key
     query = text("""
         SELECT l.id       AS listing_id,
+                    l.creator_id,
                     l.course,
                     l.condition,
                     b.isbn,

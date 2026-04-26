@@ -35,31 +35,31 @@ CREATE TABLE saved_listings (
     FOREIGN KEY (listing_id) REFERENCES listings(id) ON DELETE CASCADE
 );
 
--- chat rooms (conversations)
-CREATE TABLE rooms (
+-- conversations (1-on-1 or group)
+CREATE TABLE conversations (
     id SERIAL PRIMARY KEY,
-    listing_id INTEGER NOT NULL,
-    buyer_id INTEGER NOT NULL,
-    UNIQUE (listing_id, buyer_id),
-    FOREIGN KEY (buyer_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (listing_id) REFERENCES listings(id) ON DELETE CASCADE
+    listing_id INTEGER REFERENCES listings(id) ON DELETE SET NULL,
+    is_group BOOLEAN NOT NULL DEFAULT FALSE,
+    title TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
--- conversation members (stores participants of conversations)
+-- conversation members (who's in each conversation)
 CREATE TABLE conversation_members (
-    room_id INTEGER NOT NULL,
-    user_id INTEGER NOT NULL,
-    FOREIGN KEY (room_id) REFERENCES rooms(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    conversation_id INTEGER NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    last_read_at TIMESTAMP,
+    PRIMARY KEY (conversation_id, user_id)
 );
 
--- messages, stores each message and the context where it was sent
+-- messages
 CREATE TABLE messages (
     id SERIAL PRIMARY KEY,
-    room_id INTEGER NOT NULL,
-    sender_id INTEGER NOT NULL,
-    content TEXT NOT NULL,
-    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (room_id) REFERENCES rooms(id) ON DELETE CASCADE,
-    FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE
+    conversation_id INTEGER NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+    sender_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    body TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
+
+CREATE INDEX idx_messages_conv ON messages(conversation_id, created_at DESC);
+CREATE INDEX idx_members_user ON conversation_members(user_id);
