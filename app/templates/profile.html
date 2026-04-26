@@ -1,85 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OpenShelf — Saved</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='frontend/styles.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='frontend/saved.css') }}">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>OpenShelf — Saved</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='frontend/styles.css') }}">
 </head>
 <body>
-  <div class="app-shell">
-    <nav class="topnav">
-      <span class="topnav-brand">open<span>shelf</span></span>
-      <div class="topnav-right">
-        <div class="avatar-circle">{{ (current_user.username or 'OS')[:2]|upper }}</div>
-      </div>
-    </nav>
+	<div class="app-shell">
+		
+		<nav class="topnav">
+			<span class="topnav-brand">open<span>shelf</span></span>
+			<div class="topnav-right">
+				<div class="avatar-circle">{{ (current_user.username or 'OS')[:2]|upper }}</div>
+			</div>
+		</nav>
 
-    <main class="page-content">
-      <div class="saved-header">
-        <div>
-          <h1 class="saved-title">Saved listings</h1>
-          <p class="saved-sub">{{ saved_listings|length }} saved, {{ posted_listings|length }} posted</p>
-        </div>
-      </div>
+		<main class="page-content">
+			<div class="saved-header">
+				<div>
+					<h1 class="saved-title">Your Shelf</h1>
+					<p class="saved-sub">Manage your active posts and saved books</p>
+				</div>
+			</div>
 
-      <div class="filter-row">
-        <button class="filter-chip active-chip" type="button" onclick="showPanel('saved', this)">Saved</button>
-        <button class="filter-chip" type="button" onclick="showPanel('posted', this)">Posted</button>
-      </div>
+			<div class="filter-row">
+				<button class="filter-chip active-chip" type="button" onclick="showPanel('saved', this)">
+					Saved
+				</button>
+				<button class="filter-chip" type="button" onclick="showPanel('posted', this)">
+					Posted
+				</button>
+			</div>
 
-      <section class="saved-grid" id="saved-panel">
-        {% if saved_listings %}
-          {% for l in saved_listings %}
-          <div class="saved-card">
-            <a class="saved-cover" style="background:var(--pink-light)" href="{{ url_for('search.listing_detail', listing_id=l.listing_id) }}">📚</a>
-            <div class="saved-body">
-              <a class="saved-book-title" href="{{ url_for('search.listing_detail', listing_id=l.listing_id) }}">{{ l.title }}</a>
-              <div class="saved-course">{{ l.course }}</div>
-              <div class="saved-price-row">
-                <span class="pill pill-green">{{ l.condition }}</span>
-                <form action="{{ url_for('listings.unsave_listing', listing_id=l.listing_id) }}" method="POST">
-                  <button class="saved-remove-btn" type="submit">♥</button>
-                </form>
-              </div>
-            </div>
-          </div>
-          {% endfor %}
-        {% else %}
-          <div class="empty-state" style="grid-column:span 2">
-            <div class="empty-state-icon">💔</div>
-            <div class="empty-state-title">Nothing here yet</div>
-            <div class="empty-state-text">Save books from the search page to see them here.</div>
-          </div>
-        {% endif %}
-      </section>
+			<section class="saved-grid" id="saved-panel">
+				{% if saved_listings %}
+					{% for l in saved_listings %}
+					<div class="saved-card">
+						
+						<a class="saved-cover saved-cover-pink" href="{{ url_for('search.listing_detail', listing_id=l.listing_id) }}">
+							📚
+						</a>
 
-      <section class="saved-grid hidden" id="posted-panel">
-        {% if posted_listings %}
-          {% for l in posted_listings %}
-          <div class="saved-card">
-            <a class="saved-cover" style="background:var(--purple-light)" href="{{ url_for('search.listing_detail', listing_id=l.listing_id) }}">📖</a>
-            <div class="saved-body">
-              <a class="saved-book-title" href="{{ url_for('search.listing_detail', listing_id=l.listing_id) }}">{{ l.title }}</a>
-              <div class="saved-course">{{ l.course }}</div>
-              <div class="saved-price-row">
-                <span class="pill pill-green">{{ l.condition }}</span>
-                <form action="{{ url_for('listings.delete_listing', listing_id=l.listing_id) }}" method="POST" onsubmit="return confirm('Delete this listing?');">
-                  <button class="saved-remove-btn" type="submit">✕</button>
-                </form>
-              </div>
-            </div>
-          </div>
-          {% endfor %}
-        {% else %}
-          <div class="empty-state" style="grid-column:span 2">
-            <div class="empty-state-title">No posted textbooks yet</div>
-            <div class="empty-state-text">Post a textbook to manage it here.</div>
-          </div>
-        {% endif %}
-      </section>
-    </main>
+						<div class="saved-body">
+							<a class="saved-book-title" href="{{ url_for('search.listing_detail', listing_id=l.listing_id) }}">{{ l.title }}</a>
+							<div class="saved-course">{{ l.course }}</div>
+							<div class="saved-price-row">
+								<span class="pill pill-green">{{ l.condition|title }}</span>
+								<form action="{{ url_for('listings.unsave_listing', listing_id=l.listing_id) }}" method="POST">
+									<button class="saved-remove-btn" type="submit">♥</button>
+								</form>
+							</div>
+						</div>
+					</div>
+					{% endfor %}
+				{% else %}
+					<div class="empty-state" style="grid-column:span 2">
+						<div class="empty-state-icon">💔</div>
+						<div class="empty-state-title">Nothing here yet</div>
+						<div class="empty-state-text">Save books from the search page to see them here.</div>
+					</div>
+				{% endif %}
+			</section>
+
+			<section class="saved-grid hidden" id="posted-panel">
+				{% if posted_listings %}
+					{% for l in posted_listings %}
+					<div class="saved-card">
+						
+						<a class="saved-cover saved-cover-purple" href="{{ url_for('search.listing_detail', listing_id=l.listing_id) }}">
+							📖
+						</a>
+
+						<div class="saved-body">
+							<a class="saved-book-title" href="{{ url_for('search.listing_detail', listing_id=l.listing_id) }}">{{ l.title }}</a>
+							<div class="saved-course">{{ l.course }}</div>
+							<div class="saved-price-row">
+								<span class="pill pill-green">{{ l.condition|title }}</span>
+								<form action="{{ url_for('listings.delete_listing', listing_id=l.listing_id) }}" method="POST" onsubmit="return confirm('Delete this listing?');">
+									<button class="saved-remove-btn delete-icon" type="submit">✕</button>
+								</form>
+							</div>
+						</div>
+					</div>
+					{% endfor %}
+				{% else %}
+					<div class="empty-state" style="grid-column:span 2">
+						<div class="empty-state-title">No posted textbooks yet</div>
+						<div class="empty-state-text">Post a textbook to manage it here.</div>
+					</div>
+				{% endif %}
+			</section>
+		</main>
 
     <nav class="botnav">
       <a href="{{ url_for('index') }}" class="nav-btn">Home <div class="nav-dot"></div></a>
@@ -90,13 +102,16 @@
     </nav>
   </div>
 
-  <script>
-    function showPanel(panel, button) {
-      document.getElementById('saved-panel').classList.toggle('hidden', panel !== 'saved');
-      document.getElementById('posted-panel').classList.toggle('hidden', panel !== 'posted');
-      document.querySelectorAll('.filter-chip').forEach((chip) => chip.classList.remove('active-chip'));
-      button.classList.add('active-chip');
-    }
-  </script>
+	<script>
+		// Tab Switcher
+		function showPanel(panel, button) {
+			document.getElementById('saved-panel').classList.toggle('hidden', panel !== 'saved');
+			document.getElementById('posted-panel').classList.toggle('hidden', panel !== 'posted');
+			document.querySelectorAll('.filter-chip').forEach((chip) => chip.classList.remove('active-chip'));
+			button.classList.add('active-chip');
+		}
+	</script>
+	
+	<script src="{{ url_for('static', filename='frontend/global.js') }}"></script>
 </body>
 </html>

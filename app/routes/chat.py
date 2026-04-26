@@ -1,3 +1,8 @@
+from flask import Blueprint, render_template, session, redirect, url_for, flash, request, jsonify
+from flask_socketio import emit, join_room, leave_room
+from app import db
+from sqlalchemy import text
+
 """
 Chat Blueprint
 Real-time chat using Flask-SocketIO with PostgreSQL persistence.

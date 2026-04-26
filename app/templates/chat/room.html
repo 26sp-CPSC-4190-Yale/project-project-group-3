@@ -199,7 +199,7 @@
 
       msgBox.scrollTop = msgBox.scrollHeight;
 
-      var socket = io();
+			var socket = io();
 
       socket.on("connect", function () {
           socket.emit("join", { room: ROOM });
@@ -209,18 +209,18 @@
           var isMine = data.sender_id === USER_ID;
           var initials = (data.username || "??").substring(0, 2).toUpperCase();
 
-          var row = document.createElement("div");
-          row.className = "msg-row " + (isMine ? "mine" : "theirs");
+					var row = document.createElement("div");
+					row.className = "msg-row " + (isMine ? "mine" : "theirs");
 
-          var avatar = document.createElement("div");
-          avatar.className = "msg-avatar";
-          avatar.textContent = initials;
+					var avatar = document.createElement("div");
+					avatar.className = "msg-avatar";
+					avatar.textContent = initials;
 
           var bubble = document.createElement("div");
           bubble.className = "msg-bubble";
 
-          var text = document.createElement("div");
-          text.textContent = data.msg;
+					var text = document.createElement("div");
+					text.textContent = data.msg;
 
           var time = document.createElement("div");
           time.className = "msg-time";

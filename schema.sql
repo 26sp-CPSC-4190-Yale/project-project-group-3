@@ -1,9 +1,17 @@
+DROP TABLE IF EXISTS messages CASCADE;
+DROP TABLE IF EXISTS conversation_members CASCADE;
+DROP TABLE IF EXISTS rooms CASCADE;
+DROP TABLE IF EXISTS saved_listings CASCADE;
+DROP TABLE IF EXISTS listings CASCADE;
+DROP TABLE IF EXISTS books CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+
 -- users
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
-    username TEXT NOT NULL,
-    password TEXT NOT NULL, -- encrypted
-    email TEXT NOT NULL
+    username TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL, 
+    email TEXT NOT NULL UNIQUE
 );
 
 -- books
@@ -31,6 +39,7 @@ CREATE TABLE listings (
 CREATE TABLE saved_listings (
     user_id INTEGER NOT NULL,
     listing_id INTEGER NOT NULL,
+    UNIQUE (user_id, listing_id), -- Prevents double saving
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (listing_id) REFERENCES listings(id) ON DELETE CASCADE
 );

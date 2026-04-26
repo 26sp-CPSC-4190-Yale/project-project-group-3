@@ -25,79 +25,68 @@ def search_page():
 
 """
 Reads query parameters from the URL
-URL: GET /search/results?q=<search_terms>&field=<field_name>
+URL: GET /api/search?q=<search_terms>&condition=<conditions_list>&course_code=<course_codes_list>&sort=<sort_filter>
 Query params:
     q - the search term (e.g., "calculus", "CPSC 2230")
     field - which column to search: "all", "title", "isbn", "author", "course"
 """
-@search_bp.route("/search/results")
-def search_results():
-    # read the query params
-    q = request.args.get("q", "").strip()
-    field = request.args.get("field", "all")
-
-    # guard empty searches
-    if not q:
-        return render_template("search/results.html", listings=[], query=q)
-    
-    # query builder
-    like = f"%{q}%"
-
+@search_bp.route("/api/search")
+def search():
     base_query = """
-        SELECT  l.id AS listing_id,
-                l.course,
-                l.condition,
-                b.isbn,
-                b.title,
-                b.author,
-                b.publisher,
-                b.edition,
+        SELECT l.id AS listing_id, l.course, l.condition, l.creator_id,
+                b.isbn, b.title, b.author, b.publisher, b.edition,
                 u.username AS posted_by
-        FROM listings l
-        JOIN books b ON l.book_id = b.id
+        FROM listings l 
+        JOIN books b ON l.book_id=b.id
         JOIN users u ON l.creator_id = u.id
     """
 
-    if field == "isbn":
-        where = "WHERE b.isbn ILIKE :q" 
-    elif field == "title":
-        where = "WHERE b.title ILIKE :q"
-    elif field == "author":
-        where = "WHERE b.author ILIKE :q"
-    elif field == "course":
-        where = "WHERE l.course ILIKE :q"
-    else:
-        where = """
-            WHERE b.isbn ILIKE :q
-            OR b.title ILIKE :q
-            OR b.author ILIKE :q
-            OR l.course ILIKE :q
-        """
+    where_clauses = []
+    params = {}
 
-    order = "ORDER BY l.id DESC"
+    # Text Search
+    q = request.args.get("q", "").strip()
+    if q:
+        where_clauses.append("(b.isbn ILIKE :q OR b.title ILIKE :q OR b.author ILIKE :q OR l.course ILIKE :q)")
+        params["q"] = f"%{q}%"
 
-    full_query = text(f"{base_query} {where} {order}")
+    # Condition Filters
+    conditions = request.args.getlist("condition")
+    if conditions:
+        clean_conditions = tuple(c.lower() for c in conditions)
+        where_clauses.append("LOWER(l.condition) IN :conditions")
+        params["conditions"] = clean_conditions
 
-    result = db.session.execute(full_query, {"q": like})
-    listings = result.mappings().all()
+    # Course Code Filters
+    course_codes = request.args.getlist("course_code")
+    if course_codes:
+        code_clauses = []
+        for i, code in enumerate(course_codes):
+            param_key = f"code_{i}"
+            code_clauses.append(f"l.course ILIKE :{param_key}")
+            params[param_key] = f"{code}%"
+        where_clauses.append(f"({' OR '.join(code_clauses)})")
+
+    where_sql = "WHERE " + " AND ".join(where_clauses) if where_clauses else ""
+
+    # Sorting
+    sort_by = request.args.get("sort")
+    order_sql = "ORDER BY b.title ASC" if sort_by == "az" else "ORDER BY l.id DESC"
+
+    # Execute
+    full_query = text(f"{base_query} {where_sql} {order_sql}")
+    listings = db.session.execute(full_query, params).mappings().all()
 
     saved_ids = []
     if session.get('user_id'):
         saved_query = text("SELECT listing_id FROM saved_listings WHERE user_id = :user_id")
-        result = db.session.execute(saved_query, {"user_id": session.get('user_id')}).fetchall()
+        result = db.session.execute(saved_query, {"user_id": session.get('user_id')}).mappings().all()
+        saved_ids = [row["listing_id"] for row in result]
 
-        # Extract the IDs
-        saved_ids = [row[0] for row in result]
-
-    return render_template(
-        "search/results.html",
-        listings=listings,
-        query=q,
-        saved_ids=saved_ids,
-    )
+    return render_template("search/partials/listing_items.html", listings=listings, saved_ids=saved_ids)
 
 """
-Route: Signle listing detail
+Route: Single listing detail
 URL: GET /search/<int:listing_id>
 
 Shows full information about one specific listing
@@ -107,21 +96,21 @@ def listing_detail(listing_id):
 
     # query for one listing by primary key
     query = text("""
-        SELECT l.id       AS listing_id,
-                    l.creator_id,
-                    l.course,
-                    l.condition,
-                    b.isbn,
-                    b.title,
-                    b.author,
-                    b.publisher,
-                    b.edition,
-                    u.username AS posted_by
-                FROM listings l
-                JOIN books b ON l.book_id    = b.id
-                JOIN users u ON l.creator_id = u.id
-                WHERE l.id = :lid
-                 """)
+        SELECT l.id AS listing_id,
+               l.creator_id,
+               l.course,
+               l.condition,
+               b.isbn,
+               b.title,
+               b.author,
+               b.publisher,
+               b.edition,
+               u.username AS posted_by
+        FROM listings l
+        JOIN books b ON l.book_id = b.id
+        JOIN users u ON l.creator_id = u.id
+        WHERE l.id = :lid
+    """)
     
     result = db.session.execute(query, {"lid": listing_id})
     listing = result.mappings().first()
@@ -130,4 +119,7 @@ def listing_detail(listing_id):
     if listing is None:
         abort(404)
 
-    return render_template("search/detail.html", listing=listing)
+    return render_template(
+        "search/detail.html", 
+        listing=listing
+    )

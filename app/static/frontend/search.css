@@ -6,9 +6,77 @@
 .search-title  { font-size: 24px; font-weight: 800; color: var(--gray-900); }
 .search-sub    { font-size: 14px; color: var(--gray-400); margin-top: 2px; }
  
+/* --- Layout & Filters --- */
+.search-layout-horizontal {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.filters-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--white);
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--gray-200);
+}
+
+.filter-row-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap; /* Allows wrapping on smaller mobile screens */
+}
+
+.filter-label-text {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gray-900);
+  min-width: 70px;
+}
+
+.tag-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tag-checkbox {
+  cursor: pointer;
+}
+
+.tag-checkbox input[type="checkbox"] {
+  display: none; 
+}
+
+.tag-checkbox {
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--gray-200);
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--white);
+  color: var(--gray-600);
+  transition: all 0.15s;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.tag-checkbox:has(input[type="checkbox"]:checked) {
+  background: var(--purple);
+  color: var(--white);
+  border-color: var(--purple);
+}
+
+.tag-checkbox:hover {
+  border-color: var(--purple);
+}
+
+/* --- Search Bar --- */
 .search-bar-wrap {
   position: relative;
-  margin-bottom: 14px;
 }
  
 .search-icon {
@@ -38,59 +106,13 @@
   box-shadow: 0 0 0 3px rgba(127,119,221,0.12);
 }
  
-.search-clear {
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: var(--gray-200);
-  border: none;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  font-size: 11px;
-  color: var(--gray-600);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
- 
-.search-clear.hidden { display: none; }
- 
-.tag-row {
-  display: flex;
-  gap: 7px;
-  margin-bottom: 16px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  padding-bottom: 2px;
-}
- 
-.tag-row::-webkit-scrollbar { display: none; }
- 
-.tag {
-  padding: 7px 16px;
-  border-radius: var(--radius-full);
-  border: 1.5px solid var(--gray-200);
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  background: var(--white);
-  color: var(--gray-600);
-  transition: all 0.15s;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
- 
-.tag:hover { border-color: var(--purple); color: var(--purple-dark); }
-.tag.active-tag { background: var(--purple); color: var(--white); border-color: var(--purple); }
- 
+/* --- Sort Row & Meta --- */
 .sort-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 14px;
+  margin-top: 4px;
+  margin-bottom: 8px;
 }
  
 .result-count {
@@ -110,6 +132,7 @@
   cursor: pointer;
 }
  
+/* --- Result Cards --- */
 .result-list { display: flex; flex-direction: column; gap: 10px; padding-bottom: 16px; }
  
 .result-card {

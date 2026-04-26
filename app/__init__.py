@@ -16,14 +16,18 @@ def create_app():
     socketio.init_app(app)
 
     @app.context_processor
-    def inject_auth_state():
-        return {
+    def inject_global_state():
+        from flask import request as current_request
+        state = {
             "current_user": {
                 "id": session.get("user_id"),
                 "email": session.get("user_email"),
                 "username": session.get("username"),
-            }
+            },
+            "unread_count": 0
         }
+
+        return state
 
     @app.context_processor
     def inject_unread_count():
