@@ -1,119 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OpenShelf — List a Book</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='frontend/styles.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='frontend/home.css') }}">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>OpenShelf — List a Book</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='frontend/styles.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='frontend/home.css') }}">
 </head>
 <body>
-  <div class="app-shell">
-    <nav class="topnav">
-      <span class="topnav-brand">open<span>shelf</span></span>
-      <div class="topnav-right">
-        {% if current_user.id %}
-        <div class="avatar-circle">{{ (current_user.username or 'OS')[:2]|upper }}</div>
-        {% else %}
-        <a class="btn btn-secondary" href="{{ url_for('index') }}">Sign in</a>
-        {% endif %}
-      </div>
-    </nav>
+	<div class="app-shell">
+		<nav class="topnav">
+			<span class="topnav-brand">open<span>shelf</span></span>
+			<div class="topnav-right">
+				{% if current_user.id %}
+				<div class="avatar-circle">{{ (current_user.username or 'OS')[:2]|upper }}</div>
+				{% else %}
+				<a class="btn btn-secondary" href="{{ url_for('index') }}">Sign in</a>
+				{% endif %}
+			</div>
+		</nav>
 
-    <main class="page-content">
-      <div class="greeting">
-        <h1 class="greeting-title">List a book</h1>
-        <p class="greeting-sub">Post a textbook into the shared marketplace.</p>
-      </div>
+		<main class="page-content">
+			<div class="greeting">
+				<h1 class="greeting-title">List a book</h1>
+				<p class="greeting-sub">Post a textbook into the shared marketplace.</p>
+			</div>
 
-      <form id="uploadForm" class="card">
-        <div class="form-group">
-          <label class="form-label">Book title</label>
-          <input class="form-input" id="title" type="text" placeholder="e.g. Organic Chemistry, 9th Ed." required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Author</label>
-          <input class="form-input" id="author" type="text" placeholder="e.g. McMurry" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">ISBN</label>
-          <input class="form-input" id="isbn" type="text" placeholder="9780262046305" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Publisher</label>
-          <input class="form-input" id="publisher" type="text" placeholder="MIT Press" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Edition</label>
-          <input class="form-input" id="edition" type="text" placeholder="4th" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Course code</label>
-          <input class="form-input" id="course" type="text" placeholder="e.g. CPSC 4190" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Condition</label>
-          <select class="form-input" id="condition" required>
-            <option value="" disabled selected>Select condition</option>
-            <option>Like new</option>
-            <option>Good</option>
-            <option>Highlighted</option>
-            <option>Worn</option>
-          </select>
-        </div>
-        <button id="submitBtn" type="submit" class="btn btn-primary btn-full">Post listing</button>
-        <div id="statusMessage" class="empty-state-text" style="margin-top:12px"></div>
-      </form>
-    </main>
+			<form id="uploadForm" class="card">
+				<div class="form-group">
+					<label class="form-label">Book title</label>
+					<input class="form-input" id="title" type="text" placeholder="e.g. Organic Chemistry, 9th Ed." required>
+				</div>
+				<div class="form-group">
+					<label class="form-label">Author</label>
+					<input class="form-input" id="author" type="text" placeholder="e.g. McMurry" required>
+				</div>
+				<div class="form-group">
+					<label class="form-label">ISBN</label>
+					<input class="form-input" id="isbn" type="text" placeholder="9780262046305" required>
+				</div>
+				<div class="form-group">
+					<label class="form-label">Publisher</label>
+					<input class="form-input" id="publisher" type="text" placeholder="MIT Press" required>
+				</div>
+				<div class="form-group">
+					<label class="form-label">Edition</label>
+					<input class="form-input" id="edition" type="text" placeholder="4th" required>
+				</div>
+				<div class="form-group">
+					<label class="form-label">Course code</label>
+					<input class="form-input" id="course" type="text" placeholder="e.g. CPSC 4190" required>
+				</div>
+				<div class="form-group">
+					<label class="form-label">Condition</label>
+					<select class="form-input" id="condition" required>
+						<option value="" disabled selected>Select condition</option>
+						<option>Like new</option>
+						<option>Good</option>
+						<option>Lightly Used</option>
+						<option>Worn</option>
+					</select>
+				</div>
+				<button id="submitBtn" type="submit" class="btn btn-primary btn-full">Post listing</button>
+				<div id="statusMessage" class="empty-state-text" style="margin-top:12px"></div>
+			</form>
+		</main>
 
     <nav class="botnav">
       <a href="{{ url_for('index') }}" class="nav-btn">Home <div class="nav-dot"></div></a>
       <a href="{{ url_for('search.search_page') }}" class="nav-btn">Search <div class="nav-dot"></div></a>
+      <a href="{{ url_for('chat.chat_list') }}" class="nav-btn">Chats <div class="nav-dot"></div>{% if unread_count > 0 %}<span class="nav-badge">{{ unread_count }}</span>{% endif %}</a>
       <a href="{{ url_for('listings.profile_page') }}" class="nav-btn">Saved <div class="nav-dot"></div></a>
       <a href="{{ url_for('upload.upload_page') }}" class="nav-btn active">Upload <div class="nav-dot"></div></a>
     </nav>
   </div>
 
-  <script>
-    const form = document.getElementById('uploadForm');
-    const submitBtn = document.getElementById('submitBtn');
-    const statusMessage = document.getElementById('statusMessage');
+	<script>
+		const form = document.getElementById('uploadForm');
+		const submitBtn = document.getElementById('submitBtn');
+		const statusMessage = document.getElementById('statusMessage');
 
-    form.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Posting...';
-      statusMessage.textContent = '';
+		form.addEventListener('submit', async (event) => {
+			event.preventDefault();
+			submitBtn.disabled = true;
+			submitBtn.textContent = 'Posting...';
+			statusMessage.textContent = '';
 
-      const payload = {
-        title: document.getElementById('title').value,
-        author: document.getElementById('author').value,
-        isbn: document.getElementById('isbn').value,
-        publisher: document.getElementById('publisher').value,
-        edition: document.getElementById('edition').value,
-        course: document.getElementById('course').value,
-        condition: document.getElementById('condition').value
-      };
+			const payload = {
+				title: document.getElementById('title').value,
+				author: document.getElementById('author').value,
+				isbn: document.getElementById('isbn').value,
+				publisher: document.getElementById('publisher').value,
+				edition: document.getElementById('edition').value,
+				course: document.getElementById('course').value,
+				condition: document.getElementById('condition').value
+			};
 
-      try {
-        const response = await fetch('{{ url_for('upload.upload_listing') }}', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(payload)
-        });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || 'Failed to upload textbook.');
-        statusMessage.textContent = 'Listing posted. Opening it now...';
-        window.setTimeout(() => {
-          window.location.href = data.redirect_url;
-        }, 400);
-      } catch (error) {
-        statusMessage.textContent = error.message;
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Post listing';
-      }
-    });
-  </script>
+			try {
+				const response = await fetch('{{ url_for('upload.upload_listing') }}', {
+					method: 'POST',
+					headers: {'Content-Type': 'application/json'},
+					body: JSON.stringify(payload)
+				});
+				const data = await response.json();
+				if (!response.ok) throw new Error(data.error || 'Failed to upload textbook.');
+				statusMessage.textContent = 'Listing posted. Opening it now...';
+				window.setTimeout(() => {
+					window.location.href = data.redirect_url;
+				}, 400);
+			} catch (error) {
+				statusMessage.textContent = error.message;
+			} finally {
+				submitBtn.disabled = false;
+				submitBtn.textContent = 'Post listing';
+			}
+		});
+	</script>
+	<script src="{{ url_for('static', filename='frontend/global.js') }}"></script>
 </body>
 </html>

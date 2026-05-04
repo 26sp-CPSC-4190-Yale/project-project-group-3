@@ -12,7 +12,8 @@
   margin-bottom: 16px;
   overflow-x: auto;
   scrollbar-width: none;
-  padding-bottom: 2px;
+  padding-bottom: 12px;
+  padding-top: 12px;
 }
 .filter-row::-webkit-scrollbar { display: none; }
  
@@ -37,6 +38,7 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
   padding-bottom: 16px;
+  overflow: visible;
 }
  
 .saved-card {

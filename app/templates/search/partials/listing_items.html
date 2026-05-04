@@ -1,0 +1,59 @@
+{% if listings %}
+    {% for l in listings %}
+        <div class="result-card">
+            <a class="result-cover" style="background:var(--purple-light)" 
+               href="{{ url_for('search.listing_detail', listing_id=l.listing_id) }}">📚</a>
+
+            <div class="result-info">
+                <a class="result-title" 
+                   href="{{ url_for('search.listing_detail', listing_id=l.listing_id) }}">{{ l.title }}</a>
+                <div class="result-author">{{ l.author }}</div>
+                <div class="result-tags">
+                    <span class="pill pill-purple">{{ l.course }}</span>
+                    <span class="pill pill-green">{{ l.condition|title }}</span>
+                </div>
+                <div class="result-seller">Listed by {{ l.posted_by }}</div>
+            </div>
+
+            <div class="result-price-col">
+                <a class="btn btn-secondary" 
+                   href="{{ url_for('search.listing_detail', listing_id=l.listing_id) }}">View</a>
+
+                {% if current_user.id %}
+                    {% if current_user.id == l.creator_id %}
+                        {# Owner sees delete button #}
+                        <form class="delete-form"
+                              action="{{ url_for('listings.delete_listing', listing_id=l.listing_id) }}" 
+                              method="POST">
+                            <button class="result-save-btn" type="submit" 
+                                    style="color:var(--gray-600);background:var(--gray-200);">✕</button>
+                        </form>
+
+                    {% elif l.listing_id in saved_ids %}
+                        {# Currently saved — clicking will unsave #}
+                        <form class="unsave-form"
+                              action="{{ url_for('listings.unsave_listing', listing_id=l.listing_id) }}" 
+                              method="POST">
+                            <button class="result-save-btn saved-active" type="submit">♥</button>
+                        </form>
+
+                    {% else %}
+                        {# Not saved — clicking will save #}
+                        <form class="save-form"
+                              action="{{ url_for('listings.save_listing', listing_id=l.listing_id) }}" 
+                              method="POST">
+                            <button class="result-save-btn" type="submit">♡</button>
+                        </form>
+
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon">📭</div>
+        <div class="empty-state-title">No results found</div>
+        <div class="empty-state-text">Try adjusting your filters or search terms.</div>
+    </div>
+{% endif %}
