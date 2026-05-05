@@ -7,3 +7,7 @@ venv/
 instance/
 migrations/
 .DS_Store
+
+*.pem
+*.crt
+*.key
