@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenShelf</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='frontend/styles.css') }}">
+  {% if current_user.id %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='frontend/home.css') }}">
+  {% else %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='frontend/auth.css') }}">
+  {% endif %}
+</head>
+<body>
+  {% if current_user.id %}
+  <div class="app-shell">
+    <nav class="topnav">
+      <span class="topnav-brand">open<span>shelf</span></span>
+      <div class="topnav-right">
+        <form action="{{ url_for('auth.logout', redirect=1) }}" method="POST">
+          <button class="btn btn-secondary" type="submit">Logout</button>
+        </form>
+        <div class="avatar-circle">{{ (current_user.username or 'OS')[:2]|upper }}</div>
+      </div>
+    </nav>
+
+    <main class="page-content">
+      <div class="greeting">
+        <h1 class="greeting-title">Hey, {{ current_user.username }}!</h1>
+        <p class="greeting-sub">Here's what's happening in your OpenShelf account.</p>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-num">{{ stats.listed }}</div>
+          <div class="stat-lbl">Listed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">{{ stats.saved }}</div>
+          <div class="stat-lbl">Saved</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">{{ hot_listings|length }}</div>
+          <div class="stat-lbl">Recent</div>
+        </div>
+      </div>
+
+      <div class="quick-actions">
+        <button class="quick-btn" onclick="window.location.href='{{ url_for('search.search_page') }}'">
+          <span class="quick-icon" style="background:var(--purple-light)">🔍</span>
+          <span>Find books</span>
+        </button>
+        <button class="quick-btn" onclick="window.location.href='{{ url_for('upload.upload_page') }}'">
+          <span class="quick-icon" style="background:var(--amber-light)">➕</span>
+          <span>List a book</span>
+        </button>
+        <button class="quick-btn" onclick="window.location.href='{{ url_for('listings.profile_page') }}'">
+          <span class="quick-icon" style="background:var(--pink-light)">❤️</span>
+          <span>Saved</span>
+        </button>
+      </div>
+
+      <div class="section-label">Your active listings</div>
+      <div class="listings-list">
+        {% if active_listings %}
+          {% for listing in active_listings %}
+          <a class="listing-row" href="{{ url_for('search.listing_detail', listing_id=listing.listing_id) }}">
+            <div class="listing-cover" style="background:var(--purple-light)">📚</div>
+            <div class="listing-info">
+              <div class="listing-title">{{ listing.title }}</div>
+              <div class="listing-meta">{{ listing.course }} &nbsp;·&nbsp; <span class="pill pill-green">{{ listing.condition|title }}</span></div>
+            </div>
+          </a>
+          {% endfor %}
+        {% else %}
+          <div class="empty-state">
+            <div class="empty-state-title">No active listings yet</div>
+            <div class="empty-state-text">Post your first textbook to see it here.</div>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="section-label" style="margin-top:24px">Recent listings</div>
+      <div class="hot-scroll">
+        {% for listing in hot_listings %}
+        <a class="hot-card" href="{{ url_for('search.listing_detail', listing_id=listing.listing_id) }}">
+          <div class="hot-cover" style="background:var(--amber-light)">📖</div>
+          <div class="hot-title">{{ listing.title }}</div>
+          <div class="hot-course">{{ listing.course }}</div>
+        </a>
+        {% endfor %}
+      </div>
+    </main>
+
+    <nav class="botnav">
+      <a href="{{ url_for('index') }}" class="nav-btn active">Home <div class="nav-dot"></div></a>
+      <a href="{{ url_for('search.search_page') }}" class="nav-btn">Search <div class="nav-dot"></div></a>
+      <a href="{{ url_for('chat.chat_list') }}" class="nav-btn">Chats <div class="nav-dot"></div>{% if unread_count > 0 %}<span class="nav-badge">{{ unread_count }}</span>{% endif %}</a>
+      <a href="{{ url_for('listings.profile_page') }}" class="nav-btn">Saved <div class="nav-dot"></div></a>
+      <a href="{{ url_for('upload.upload_page') }}" class="nav-btn">Upload <div class="nav-dot"></div></a>
+    </nav>
+  </div>
+  {% else %}
+  <div class="auth-shell">
+    <div class="auth-hero">
+      <div class="auth-logo">open<span>shelf</span></div>
+      <p class="auth-tagline">Buy and sell textbooks with students near you</p>
+      <div class="auth-bubbles">
+        <div class="bubble b1">📚</div>
+        <div class="bubble b2">💸</div>
+        <div class="bubble b3">🎓</div>
+        <div class="bubble b4">📖</div>
+        <div class="bubble b5">✏️</div>
+      </div>
+    </div>
+
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-signin" onclick="switchTab('signin')">Sign in</button>
+        <button class="auth-tab" id="tab-signup" onclick="switchTab('signup')">Create account</button>
+      </div>
+
+      <form id="form-signin" class="auth-form" onsubmit="handleSignIn(event)">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" id="signin-email" type="email" placeholder="you@yale.edu" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="input-wrap">
+            <input class="form-input" type="password" id="signin-pw" placeholder="••••••••" required>
+            <button type="button" class="pw-toggle" onclick="togglePw('signin-pw', this)">Show</button>
+          </div>
+        </div>
+        <div class="auth-forgot"><a href="{{ url_for('search.search_page') }}">Continue browsing as guest</a></div>
+        <button type="submit" class="btn btn-primary btn-full auth-submit">Sign in</button>
+      </form>
+
+      <form id="form-signup" class="auth-form hidden" onsubmit="handleSignUp(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">First name</label>
+            <input class="form-input" id="signup-first" type="text" placeholder="Ayushi" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last name</label>
+            <input class="form-input" id="signup-last" type="text" placeholder="Das" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">School email</label>
+          <input class="form-input" id="signup-email" type="email" placeholder="you@yale.edu" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="input-wrap">
+            <input class="form-input" type="password" id="signup-pw" placeholder="At least 8 characters" required>
+            <button type="button" class="pw-toggle" onclick="togglePw('signup-pw', this)">Show</button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full auth-submit">Create account</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(tab) {
+      document.getElementById('tab-signin').classList.toggle('active', tab === 'signin');
+      document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+      document.getElementById('form-signin').classList.toggle('hidden', tab !== 'signin');
+      document.getElementById('form-signup').classList.toggle('hidden', tab !== 'signup');
+    }
+
+    function togglePw(id, btn) {
+      const input = document.getElementById(id);
+      const showing = input.type === 'text';
+      input.type = showing ? 'password' : 'text';
+      btn.textContent = showing ? 'Show' : 'Hide';
+    }
+
+    async function sendJson(url, payload) {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Request failed.');
+      return data;
+    }
+
+    async function handleSignIn(event) {
+      event.preventDefault();
+      try {
+        const data = await sendJson('{{ url_for('auth.login') }}', {
+          email: document.getElementById('signin-email').value,
+          password: document.getElementById('signin-pw').value
+        });
+        window.location.href = data.redirect_url || '{{ url_for('search.search_page') }}';
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    async function handleSignUp(event) {
+      event.preventDefault();
+      try {
+        const data = await sendJson('{{ url_for('auth.signup') }}', {
+          first_name: document.getElementById('signup-first').value,
+          last_name: document.getElementById('signup-last').value,
+          email: document.getElementById('signup-email').value,
+          password: document.getElementById('signup-pw').value
+        });
+        window.location.href = data.redirect_url || '{{ url_for('search.search_page') }}';
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+  </script>
+  {% endif %}
+  <script src="{{ url_for('static', filename='frontend/global.js') }}"></script>
+</body>
+</html>

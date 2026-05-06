@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>OpenShelf — Search</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='frontend/styles.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='frontend/search.css') }}">
+</head>
+<body>
+	<div class="app-shell">
+		<nav class="topnav">
+			<span class="topnav-brand">open<span>shelf</span></span>
+			<div class="topnav-right">
+				{% if current_user.id %}
+				<div class="avatar-circle">{{ (current_user.username or 'OS')[:2]|upper }}</div>
+				{% else %}
+				<a class="btn btn-secondary" href="{{ url_for('index') }}">Sign in</a>
+				{% endif %}
+			</div>
+		</nav>
+
+		<main class="page-content">
+			<div class="search-header">
+				<h1 class="search-title">Find textbooks</h1>
+				<p class="search-sub">Search by title, author, ISBN, or course code</p>
+			</div>
+
+			<form method="get" class="search-layout-horizontal" id="search-form">
+				<input type="hidden" name="field" id="field-input" value="all">
+				<div class="search-bar-wrap">
+						<span class="search-icon">🔍</span>
+						<input
+								class="search-bar"
+								id="search-input"
+								name="q"
+								type="text"
+								placeholder="e.g. Organic Chemistry or CHEM 220"
+						/>
+						<button class="search-clear hidden" id="clear-btn" type="button" onclick="clearSearch()">✕</button>
+				</div>
+
+				<div class="filters-container">
+						<div class="filter-row-group">
+								<span class="filter-label-text">Course:</span>
+								<div class="tag-row">
+										<label class="tag-checkbox"><input type="checkbox" name="course_code" value="CPSC"> CPSC</label>
+										<label class="tag-checkbox"><input type="checkbox" name="course_code" value="MATH"> MATH</label>
+										<label class="tag-checkbox"><input type="checkbox" name="course_code" value="CHEM"> CHEM</label>
+										<label class="tag-checkbox"><input type="checkbox" name="course_code" value="ENGL"> ENGL</label>
+										<label class="tag-checkbox"><input type="checkbox" name="course_code" value="HIST"> HIST</label>
+								</div>
+						</div>
+
+						<div class="filter-row-group">
+							<span class="filter-label-text">Condition:</span>
+							<div class="tag-row">
+								<label class="tag-checkbox">
+								<input type="checkbox" name="condition" value="like new"> Like new
+								</label>
+								<label class="tag-checkbox">
+								<input type="checkbox" name="condition" value="good"> Good
+								</label>
+								<label class="tag-checkbox">
+								<input type="checkbox" name="condition" value="lightly used"> Lightly used
+								</label>
+								<label class="tag-checkbox">
+								<input type="checkbox" name="condition" value="worn"> Worn
+									</label>
+							</div>
+						</div>
+				</div>
+
+				<div class="sort-row">
+					<span class="result-count" id="count-display">Loading...</span>
+					<select name="sort" class="sort-select">
+							<option value="newest">Newest First</option>
+							<option value="az">A-Z</option>
+					</select>
+				</div>
+			</form>
+			<div class="result-list" id="results-container" style="margin-top: 16px;">
+				{% include 'search/partials/listing_items.html' ignore missing %}
+			</div>		
+		</main>
+
+    <nav class="botnav">
+      <a href="{{ url_for('index') }}" class="nav-btn">Home <div class="nav-dot"></div></a>
+      <a href="{{ url_for('search.search_page') }}" class="nav-btn active">Search <div class="nav-dot"></div></a>
+      <a href="{{ url_for('chat.chat_list') }}" class="nav-btn">Chats <div class="nav-dot"></div>{% if unread_count > 0 %}<span class="nav-badge">{{ unread_count }}</span>{% endif %}</a>
+      <a href="{{ url_for('listings.profile_page') }}" class="nav-btn">Saved <div class="nav-dot"></div></a>
+      <a href="{{ url_for('upload.upload_page') }}" class="nav-btn">Upload <div class="nav-dot"></div></a>
+    </nav>
+  </div>
+
+    <script src="{{ url_for('static', filename='frontend/search.js') }}"></script>
+	<script src="{{ url_for('static', filename='frontend/global.js') }}"></script>
+</body>
+</html>
