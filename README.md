@@ -52,6 +52,14 @@ For testing:
 4. Start the app:
    `python3 run.py`
 
+## Download SSL Key
+1. Install mkcert
+    `brew install mkcert`
+2. `mkcert -install`
+3. To create keys, in project folder: `mkcert localhost`
+4. Change the prefix of the key to `localhost+2` (matching `run.py`)
+5. Note: FireFox does not like this certificate (use Chrome)
+
 ## Notes
 
 - Authentication UI exists on the landing page, but backend auth is not connected yet.
