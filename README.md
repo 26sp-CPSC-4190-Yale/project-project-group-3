@@ -9,6 +9,37 @@ This repo now runs as one Flask app with:
 - `/search/<listing_id>` for listing details
 - `/upload` for creating a listing that feeds the shared search experience
 
+## Structure
+- `index.html`
+- `styles.css`
+- `data.json`
+- `messaging.html`
+- `messaging.css`
+- `messaging.js`
+- `saved.js`
+- `saved.html`
+- `saved.css`
+- `search.css`
+- `search.html`
+- `search.js`
+- `home.css`
+- `home.js`
+- `home.html`
+- `auth.css`
+
+## Features
+
+- Animated canvas background
+- Sign in / sign up tab switcher
+- Password visibility toggle
+- Password strength meter
+- Form validation
+- Toast notifications
+- Developed page dedicated to featuring saved textbooks
+- Developed page dedicated to messaging
+- Developed page to enhance searching capabilities
+- Developed home page
+
 ## Database setup
 
 The app uses PostgreSQL with the schema in `schema.sql` and the sample data in `seed.sql`.

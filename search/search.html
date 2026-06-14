@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenShelf — Search</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/search.css">
+</head>
+<body>
+  <div class="app-shell">
+ 
+    <nav class="topnav">
+      <span class="topnav-brand">open<span>shelf</span></span>
+      <div class="topnav-right">
+        <div class="avatar-circle">AY</div>
+      </div>
+    </nav>
+ 
+    <main class="page-content">
+ 
+      <div class="search-header">
+        <h1 class="search-title">Find textbooks</h1>
+        <p class="search-sub">Search by title, author, or course code</p>
+      </div>
+ 
+      <div class="search-bar-wrap">
+        <span class="search-icon">🔍</span>
+        <input
+          class="search-bar"
+          id="search-input"
+          type="text"
+          placeholder="e.g. Organic Chemistry or CHEM 220"
+          oninput="doSearch(this.value)"
+        />
+        <button class="search-clear hidden" id="clear-btn" onclick="clearSearch()">✕</button>
+      </div>
+ 
+      <div class="tag-row" id="tag-row">
+        <button class="tag active-tag" onclick="quickSearch(this,'')">All</button>
+        <button class="tag" onclick="quickSearch(this,'CPSC')">CPSC</button>
+        <button class="tag" onclick="quickSearch(this,'MATH')">MATH</button>
+        <button class="tag" onclick="quickSearch(this,'CHEM')">CHEM</button>
+        <button class="tag" onclick="quickSearch(this,'ECON')">ECON</button>
+        <button class="tag" onclick="quickSearch(this,'PHYS')">PHYS</button>
+        <button class="tag" onclick="quickSearch(this,'ENGL')">ENGL</button>
+      </div>
+ 
+      <div class="sort-row">
+        <span class="result-count" id="result-count">12 listings found</span>
+        <select class="sort-select" onchange="sortResults(this.value)">
+          <option value="price">Price: low to high</option>
+          <option value="pricedesc">Price: high to low</option>
+          <option value="new">Newest first</option>
+          <option value="cond">Best condition</option>
+        </select>
+      </div>
+ 
+      <div class="result-list" id="result-list"></div>
+ 
+    </main>
+ 
+    <nav class="botnav">
+      <a href="home.html" class="nav-btn">
+        <svg viewBox="0 0 22 22" fill="none"><rect x="2" y="2" width="8" height="8" rx="2" fill="currentColor" opacity=".9"/><rect x="12" y="2" width="8" height="8" rx="2" fill="currentColor" opacity=".4"/><rect x="2" y="12" width="8" height="8" rx="2" fill="currentColor" opacity=".4"/><rect x="12" y="12" width="8" height="8" rx="2" fill="currentColor" opacity=".4"/></svg>
+        Home <div class="nav-dot"></div>
+      </a>
+      <a href="search.html" class="nav-btn active">
+        <svg viewBox="0 0 22 22" fill="none"><circle cx="9.5" cy="9.5" r="5.5" stroke="currentColor" stroke-width="1.5"/><line x1="13.5" y1="13.5" x2="19" y2="19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Search <div class="nav-dot"></div>
+      </a>
+      <a href="saved.html" class="nav-btn">
+        <svg viewBox="0 0 22 22" fill="none"><path d="M11 17L4 10.5C4 7.5 6 5 8.5 5C9.8 5 11 6 11 6C11 6 12.2 5 13.5 5C16 5 18 7.5 18 10.5L11 17Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        Saved <div class="nav-dot"></div>
+      </a>
+      <a href="messaging.html" class="nav-btn">
+        <svg viewBox="0 0 22 22" fill="none"><path d="M3 4h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H7l-4 3V5a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        Messages <div class="nav-dot"></div>
+      </a>
+    </nav>
+ 
+  </div>
+ 
+  <script src="js/data.js"></script>
+  <script src="js/search.js"></script>
+</body>
+</html>
